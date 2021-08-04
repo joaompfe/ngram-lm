@@ -1,0 +1,869 @@
+\data\
+ngram 1=209
+ngram 2=323
+ngram 3=325
+
+\1-grams:
+-2.7133224	<unk>	0
+0	<s>	-0.30103
+-2.45805	</s>	0
+-2.45805	Que	-0.30103
+-1.4629025	a	-0.30103
+-2.45805	aviação	-0.30103
+-2.2983491	e	-0.30103
+-2.1818435	o	-0.30103
+-2.45805	sexo	-0.30103
+-2.45805	tinham	-0.30103
+-2.45805	tendência	-0.30103
+-1.8937786	para	-0.30103
+-2.45805	ter	-0.30103
+-2.1818435	uma	-0.30103
+-2.2983491	qualquer	-0.30103
+-2.45805	ligação	-0.30103
+-1.2054666	,	-0.30103
+-2.45805	era	-0.30103
+-2.45805	coisa	-0.30103
+-1.6564176	que	-0.30103
+-2.45805	Público	-0.30103
+-2.45805	&amp;	-0.30103
+-2.45805	Privado	-0.30103
+-2.45805	ignorava	-0.30103
+-1.5993792	.	-0.7781512
+-2.45805	Mas	-0.30103
+-2.45805	verdade	-0.30103
+-2.2983491	é	-0.30103
+-2.0143526	os	-0.30103
+-2.45805	homens	-0.30103
+-2.45805	já	-0.30103
+-2.45805	estão	-0.30103
+-2.2983491	há	-0.30103
+-2.45805	décadas	-0.30103
+-2.45805	envolvidos	-0.30103
+-2.0143526	no	-0.30103
+-2.45805	negócio	-0.30103
+-2.0143526	dos	-0.30103
+-2.45805	aviões	-0.30103
+-2.45805	não	-0.30103
+-2.45805	têm	-0.30103
+-2.45805	problema	-0.30103
+-2.2983491	em	-0.30103
+-2.45805	aproximar	-0.30103
+-2.45805	dois	-0.30103
+-2.45805	assuntos	-0.30103
+-2.45805	Na	-0.30103
+-2.45805	recente	-0.30103
+-2.45805	convenção	-0.30103
+-1.8937786	da	-0.30103
+-2.45805	Associações	-0.30103
+-2.45805	das	-0.30103
+-2.45805	Companhias	-0.30103
+-2.45805	Aéreas	-0.30103
+-2.45805	Regionais	-0.30103
+-2.45805	Europeias	-0.30103
+-2.45805	durante	-0.30103
+-2.0143526	um	-0.30103
+-2.45805	jantar	-0.30103
+-2.45805	convívio	-0.30103
+-2.45805	qual	-0.30103
+-2.2983491	foi	-0.30103
+-2.45805	atribuído	-0.30103
+-2.45805	prémio	-0.30103
+-2.45805	companhia	-0.30103
+-2.45805	regional	-0.30103
+-2.0143526	do	-0.30103
+-2.45805	ano	-0.30103
+-2.45805	laureados	-0.30103
+-2.45805	arranjou	-0.30103
+-2.2983491	forma	-0.30103
+-2.45805	original	-0.30103
+-1.3295071	de	-0.30103
+-2.45805	dizer	-0.30103
+-2.45805	aos	-0.30103
+-2.45805	convivas	-0.30103
+-2.1818435	:	-0.30103
+-2.0143526	«	-0.30103
+-2.45805	ando	-0.30103
+-2.45805	nesta	-0.30103
+-2.45805	vida	-0.30103
+-2.45805	muitos	-0.30103
+-2.45805	anos	-0.30103
+-2.0143526	»	-0.30103
+-2.45805	P.	-0.30103
+-2.2983491	--	-0.30103
+-2.45805	O	-0.30103
+-2.45805	reforça	-0.30103
+-2.45805	questão	-0.30103
+-2.45805	além	-0.30103
+-2.45805	público	-0.30103
+-2.45805	Sala	-0.30103
+-2.45805	Polivalente	-0.30103
+-2.45805	ninguém	-0.30103
+-2.0143526	mais	-0.30103
+-2.45805	viu	-0.30103
+-2.45805	esses	-0.30103
+-2.2983491	espectáculos	-0.30103
+-2.2983491	Portugal	-0.30103
+-2.45805	R.	-0.30103
+-2.45805	De	-0.30103
+-2.45805	facto	-0.30103
+-2.45805	fácil	-0.30103
+-2.45805	fazer	-0.30103
+-2.45805	circular	-0.30103
+-2.45805	fora	-0.30103
+-2.45805	país	-0.30103
+-2.45805	dentro	-0.30103
+-2.45805	dada	-0.30103
+-2.45805	inexistência	-0.30103
+-2.45805	rede	-0.30103
+-2.45805	lhes	-0.30103
+-2.45805	garanta	-0.30103
+-2.45805	essa	-0.30103
+-2.45805	circulação	-0.30103
+-2.45805	Em	-0.30103
+-2.45805	pleno	-0.30103
+-2.45805	processo	-0.30103
+-2.45805	euforia	-0.30103
+-2.45805	provocada	-0.30103
+-2.45805	pelo	-0.30103
+-2.45805	efeito	-0.30103
+-2.45805	antecipação	-0.30103
+-2.45805	projecto	-0.30103
+-2.2983491	Delors	-0.30103
+-2.45805	marcado	-0.30103
+-2.2983491	por	-0.30103
+-2.45805	forte	-0.30103
+-2.45805	crescimento	-0.30103
+-2.45805	económico	-0.30103
+-2.45805	criação	-0.30103
+-2.45805	empregos	-0.30103
+-2.1818435	Europa	-0.30103
+-2.45805	deu	-0.30103
+-2.45805	si	-0.30103
+-2.45805	imagem	-0.30103
+-2.45805	ser	-0.30103
+-2.45805	capaz	-0.30103
+-2.45805	resolver	-0.30103
+-2.45805	problemas	-0.30103
+-2.45805	imediatos	-0.30103
+-2.45805	cidadãos	-0.30103
+-2.45805	Para	-0.30103
+-2.45805	CEE	-0.30103
+-2.45805	transformou-se	-0.30103
+-2.45805	num	-0.30103
+-2.45805	extraordinário	-0.30103
+-2.45805	instrumento	-0.30103
+-2.45805	modernização	-0.30103
+-2.45805	economia	-0.30103
+-2.45805	nacional	-0.30103
+-2.45805	A	-0.30103
+-2.45805	duplicação	-0.30103
+-2.45805	fundos	-0.30103
+-2.45805	estruturais	-0.30103
+-2.45805	consubstanciada	-0.30103
+-2.45805	chamado	-0.30103
+-2.45805	Primeiro	-0.30103
+-2.45805	Pacote	-0.30103
+-2.45805	ajudou	-0.30103
+-2.45805	tornar	-0.30103
+-2.45805	ideia	-0.30103
+-2.45805	ainda	-0.30103
+-2.45805	atractiva	-0.30103
+-2.45805	associada	-0.30103
+-2.45805	imediato	-0.30103
+-2.45805	Cavaco	-0.30103
+-2.45805	Silva	-0.30103
+-2.1818435	à	-0.30103
+-2.45805	sua	-0.30103
+-2.45805	democracia	-0.30103
+-2.45805	sucesso	-0.30103
+-2.45805	euro-euforia	-0.30103
+-2.45805	revelou-se	-0.30103
+-2.45805	todavia	-0.30103
+-2.45805	pouca	-0.30103
+-2.45805	dura	-0.30103
+-2.45805	caso	-0.30103
+-2.45805	português	-0.30103
+-2.45805	começando	-0.30103
+-2.45805	esvair-se	-0.30103
+-2.45805	medida	-0.30103
+-2.45805	avançaram	-0.30103
+-2.2983491	as	-0.30103
+-2.45805	negociações	-0.30103
+-2.45805	levaram	-0.30103
+-2.45805	ao	-0.30103
+-2.45805	Tratado	-0.30103
+-2.45805	Maastricht	-0.30103
+-2.45805	imposto	-0.30103
+-2.45805	pela	-0.30103
+-2.45805	necessidade	-0.30103
+-2.45805	amarrar	-0.30103
+-2.45805	Alemanha	-0.30103
+-2.45805	unificada	-0.30103
+-2.45805	responsáveis	-0.30103
+-2.45805	portugueses	-0.30103
+-2.45805	despertar	-0.30103
+-2.45805	duro	-0.30103
+-2.45805	afinal	-0.30103
+-2.45805	havia	-0.30103
+-2.45805	contrapartidas	-0.30103
+-2.45805	ajudas	-0.30103
+-2.45805	comunitárias	-0.30103
+-2.45805	sob	-0.30103
+-2.45805	maior	-0.30103
+-2.45805	aprofundamento	-0.30103
+-2.45805	integração	-0.30103
+-2.45805	europeia	-0.30103
+
+\2-grams:
+-0.078878835	. </s>	0
+-1.2861611	<s> Que	-0.30103
+-0.28632358	Que a	-0.30103
+-0.93099326	para a	-0.30103
+-1.1881542	, a	-0.30103
+-0.28632358	Mas a	-0.30103
+-0.84703517	» a	-0.30103
+-0.28632358	reforça a	-0.30103
+-0.28632358	dada a	-0.30103
+-0.28632358	si a	-0.30103
+-0.28632358	ajudou a	-0.30103
+-0.28632358	tornar a	-0.30103
+-0.28632358	começando a	-0.30103
+-0.28632358	sob a	-0.30103
+-1.3957412	a aviação	-0.30103
+-0.29885057	aviação e	-0.30103
+-0.29885057	económico e	-0.30103
+-0.5963829	e o	-0.30103
+-1.5670468	, o	-0.30103
+-0.29818216	atribuído o	-0.30103
+-0.7736369	o sexo	-0.30103
+-0.29952	sexo tinham	-0.30103
+-0.29952	tinham tendência	-0.30103
+-0.29551882	tendência para	-0.30103
+-0.29551882	prémio para	-0.30103
+-0.76182306	: para	-0.30103
+-0.59110665	espectáculos para	-0.30103
+-0.29551882	contrapartidas para	-0.30103
+-0.9925019	para ter	-0.30103
+-0.29818216	ter uma	-0.30103
+-0.29818216	arranjou uma	-0.30103
+-1.4616843	de uma	-0.30103
+-0.7716454	uma qualquer	-0.30103
+-0.29885057	têm qualquer	-0.30103
+-0.5990452	qualquer ligação	-0.30103
+-0.27478015	ligação ,	-0.30103
+-0.27478015	Europeias ,	-0.30103
+-0.27478015	convívio ,	-0.30103
+-0.27478015	ano ,	-0.30103
+-0.27478015	laureados ,	-0.30103
+-0.806449	» ,	-0.30103
+-0.27478015	Polivalente ,	-0.30103
+-0.55105686	Portugal ,	-0.30103
+-0.27478015	facto ,	-0.30103
+-0.27478015	dentro ,	-0.30103
+-0.55105686	Delors ,	-0.30103
+-0.27478015	empregos ,	-0.30103
+-0.27478015	estruturais ,	-0.30103
+-0.27478015	atractiva ,	-0.30103
+-0.27478015	revelou-se ,	-0.30103
+-0.27478015	todavia ,	-0.30103
+-0.27478015	português ,	-0.30103
+-0.27478015	Maastricht ,	-0.30103
+-0.27478015	portugueses ,	-0.30103
+-0.27478015	afinal ,	-0.30103
+-0.27478015	comunitárias ,	-0.30103
+-1.5925919	, era	-0.30103
+-0.29952	era coisa	-0.30103
+-0.2915541	coisa que	-0.30103
+-0.58331054	é que	-0.30103
+-0.2915541	homens que	-0.30103
+-0.2915541	O que	-0.30103
+-0.2915541	país que	-0.30103
+-0.2915541	rede que	-0.30103
+-0.2915541	medida que	-0.30103
+-0.2915541	negociações que	-0.30103
+-1.1921844	que Público	-0.30103
+-0.29952	Público &amp;	-0.30103
+-0.29952	&amp; Privado	-0.30103
+-0.29952	Privado ignorava	-0.30103
+-0.29024056	ignorava .	-0.30103
+-0.29024056	assuntos .	-0.30103
+-0.58074266	» .	-0.30103
+-0.58074266	Portugal .	-0.30103
+-0.29024056	circulação .	-0.30103
+-0.7465552	Europa .	-0.30103
+-0.29024056	cidadãos .	-0.30103
+-0.29024056	nacional .	-0.30103
+-0.29024056	europeia .	-0.30103
+-1.2861611	<s> Mas	-0.30103
+-1.3957412	a verdade	-0.30103
+-1.5796316	, é	-0.30103
+-0.29885057	verdade é	-0.30103
+-1.1717433	que os	-0.30103
+-0.29684845	aproximar os	-0.30103
+-0.29684845	resolver os	-0.30103
+-0.59373677	Para os	-0.30103
+-0.89708126	os homens	-0.30103
+-1.1921844	que já	-0.30103
+-0.29952	já estão	-0.30103
+-0.29885057	estão há	-0.30103
+-0.29885057	vida há	-0.30103
+-0.5990452	há décadas	-0.30103
+-0.29952	décadas envolvidos	-0.30103
+-1.5429211	, no	-0.30103
+-0.29684845	envolvidos no	-0.30103
+-0.29684845	consubstanciada no	-0.30103
+-0.29684845	dura no	-0.30103
+-0.89708126	no negócio	-0.30103
+-0.29684845	negócio dos	-0.30103
+-0.88659996	um dos	-0.30103
+-0.29684845	imediatos dos	-0.30103
+-0.29684845	duplicação dos	-0.30103
+-0.89708126	dos aviões	-0.30103
+-0.29952	aviões não	-0.30103
+-0.29952	não têm	-0.30103
+-0.5990452	qualquer problema	-0.30103
+-0.29885057	problema em	-0.30103
+-0.59771204	espectáculos em	-0.30103
+-0.5990452	em aproximar	-0.30103
+-0.89708126	os dois	-0.30103
+-0.29952	dois assuntos	-0.30103
+-1.2861611	<s> Na	-0.30103
+-0.29952	Na recente	-0.30103
+-0.29952	recente convenção	-0.30103
+-0.29551882	convenção da	-0.30103
+-0.29551882	público da	-0.30103
+-0.29551882	modernização da	-0.30103
+-0.29551882	ideia da	-0.30103
+-0.29551882	aprofundamento da	-0.30103
+-0.9925019	da Associações	-0.30103
+-0.29952	Associações das	-0.30103
+-0.29952	das Companhias	-0.30103
+-0.29952	Companhias Aéreas	-0.30103
+-0.29952	Aéreas Regionais	-0.30103
+-0.29952	Regionais Europeias	-0.30103
+-1.5925919	, durante	-0.30103
+-1.5429211	, um	-0.30103
+-0.29684845	durante um	-0.30103
+-1.4426436	de um	-0.30103
+-0.59373677	por um	-0.30103
+-0.89708126	um jantar	-0.30103
+-0.29952	jantar convívio	-0.30103
+-0.89708126	no qual	-0.30103
+-0.29885057	qual foi	-0.30103
+-0.29885057	despertar foi	-0.30103
+-0.5990452	foi atribuído	-0.30103
+-0.7736369	o prémio	-0.30103
+-1.3957412	a companhia	-0.30103
+-0.29952	companhia regional	-0.30103
+-0.29684845	regional do	-0.30103
+-0.29684845	além do	-0.30103
+-0.29684845	fora do	-0.30103
+-0.29684845	antecipação do	-0.30103
+-0.89708126	do ano	-0.30103
+-0.89708126	dos laureados	-0.30103
+-1.5925919	, arranjou	-0.30103
+-1.3874596	a forma	-0.30103
+-0.7716454	uma forma	-0.30103
+-0.5990452	forma original	-0.30103
+-1.3258479	, de	-0.30103
+-0.5631804	forma de	-0.30103
+-0.28115526	original de	-0.30103
+-0.28115526	inexistência de	-0.30103
+-0.28115526	processo de	-0.30103
+-0.28115526	efeito de	-0.30103
+-0.28115526	projecto de	-0.30103
+-0.28115526	criação de	-0.30103
+-0.28115526	deu de	-0.30103
+-0.28115526	imagem de	-0.30103
+-0.28115526	capaz de	-0.30103
+-0.28115526	instrumento de	-0.30103
+-0.28115526	associada de	-0.30103
+-0.28115526	democracia de	-0.30103
+-0.28115526	Tratado de	-0.30103
+-0.28115526	necessidade de	-0.30103
+-1.4815981	de dizer	-0.30103
+-0.29952	dizer aos	-0.30103
+-0.29952	aos convivas	-0.30103
+-0.29818216	convivas :	-0.30103
+-0.29818216	questão :	-0.30103
+-0.29818216	duro :	-0.30103
+-1.4426436	de «	-0.30103
+-0.7657254	: «	-0.30103
+-0.29684845	chamado «	-0.30103
+-0.29684845	sua «	-0.30103
+-0.89708126	« ando	-0.30103
+-0.29952	ando nesta	-0.30103
+-0.29952	nesta vida	-0.30103
+-0.5990452	há muitos	-0.30103
+-0.29952	muitos anos	-0.30103
+-0.29684845	anos »	-0.30103
+-0.59373677	Delors »	-0.30103
+-0.29684845	sucesso »	-0.30103
+-0.29684845	amarrar »	-0.30103
+-1.2861611	<s> P.	-0.30103
+-0.29885057	P. --	-0.30103
+-0.29885057	R. --	-0.30103
+-0.5990452	-- O	-0.30103
+-1.1921844	que reforça	-0.30103
+-1.3957412	a questão	-0.30103
+-0.9925019	para além	-0.30103
+-0.89708126	do público	-0.30103
+-0.9925019	da Sala	-0.30103
+-0.29952	Sala Polivalente	-0.30103
+-1.5925919	, ninguém	-0.30103
+-0.59373677	é mais	-0.30103
+-0.29684845	ninguém mais	-0.30103
+-0.29684845	problemas mais	-0.30103
+-0.29684845	ainda mais	-0.30103
+-0.89708126	mais viu	-0.30103
+-0.29952	viu esses	-0.30103
+-0.29885057	esses espectáculos	-0.30103
+-0.29885057	fazer espectáculos	-0.30103
+-0.59771204	em Portugal	-0.30103
+-0.59771204	Para Portugal	-0.30103
+-1.2861611	<s> R.	-0.30103
+-0.5990452	-- De	-0.30103
+-0.29952	De facto	-0.30103
+-0.89708126	mais fácil	-0.30103
+-0.29952	fácil fazer	-0.30103
+-0.9925019	para circular	-0.30103
+-0.29952	circular fora	-0.30103
+-0.89708126	do país	-0.30103
+-1.1921844	que dentro	-0.30103
+-1.5925919	, dada	-0.30103
+-1.3957412	a inexistência	-0.30103
+-0.7736369	uma rede	-0.30103
+-1.1921844	que lhes	-0.30103
+-0.29952	lhes garanta	-0.30103
+-0.29952	garanta essa	-0.30103
+-0.29952	essa circulação	-0.30103
+-1.2861611	<s> Em	-0.30103
+-0.29952	Em pleno	-0.30103
+-0.29952	pleno processo	-0.30103
+-1.4815981	de euforia	-0.30103
+-0.29952	euforia provocada	-0.30103
+-0.29952	provocada pelo	-0.30103
+-0.29952	pelo efeito	-0.30103
+-1.4815981	de antecipação	-0.30103
+-0.89708126	do projecto	-0.30103
+-1.4715271	de Delors	-0.30103
+-0.29885057	Pacote Delors	-0.30103
+-1.5925919	, marcado	-0.30103
+-0.29885057	marcado por	-0.30103
+-0.29885057	imediato por	-0.30103
+-0.89708126	um forte	-0.30103
+-0.29952	forte crescimento	-0.30103
+-0.29952	crescimento económico	-0.30103
+-0.5990452	e criação	-0.30103
+-1.4815981	de empregos	-0.30103
+-1.379333	a Europa	-0.30103
+-0.9859439	da Europa	-0.30103
+-0.7696631	à Europa	-0.30103
+-0.7736369	Europa deu	-0.30103
+-1.4815981	de si	-0.30103
+-1.3957412	a imagem	-0.30103
+-1.4815981	de ser	-0.30103
+-0.29952	ser capaz	-0.30103
+-1.4815981	de resolver	-0.30103
+-0.89708126	os problemas	-0.30103
+-0.89708126	mais imediatos	-0.30103
+-0.89708126	dos cidadãos	-0.30103
+-0.9925019	<s> Para	-0.30103
+-1.3957412	a CEE	-0.30103
+-0.29952	CEE transformou-se	-0.30103
+-0.29952	transformou-se num	-0.30103
+-0.29952	num extraordinário	-0.30103
+-0.29952	extraordinário instrumento	-0.30103
+-1.4815981	de modernização	-0.30103
+-0.9925019	da economia	-0.30103
+-0.29952	economia nacional	-0.30103
+-0.9925019	<s> A	-0.30103
+-0.5990452	A duplicação	-0.30103
+-0.89708126	dos fundos	-0.30103
+-0.29952	fundos estruturais	-0.30103
+-1.5925919	, consubstanciada	-0.30103
+-0.89708126	no chamado	-0.30103
+-0.89708126	« Primeiro	-0.30103
+-0.29952	Primeiro Pacote	-0.30103
+-1.5925919	, ajudou	-0.30103
+-1.3957412	a tornar	-0.30103
+-1.3957412	a ideia	-0.30103
+-0.7736369	Europa ainda	-0.30103
+-0.89708126	mais atractiva	-0.30103
+-1.5925919	, associada	-0.30103
+-1.4815981	de imediato	-0.30103
+-0.5990452	por Cavaco	-0.30103
+-0.29952	Cavaco Silva	-0.30103
+-0.29818216	Silva à	-0.30103
+-0.29818216	esvair-se à	-0.30103
+-0.29818216	unificada à	-0.30103
+-0.7736369	à sua	-0.30103
+-0.89708126	« democracia	-0.30103
+-1.4815981	de sucesso	-0.30103
+-0.5990452	A euro-euforia	-0.30103
+-0.29952	euro-euforia revelou-se	-0.30103
+-1.5925919	, todavia	-0.30103
+-1.4815981	de pouca	-0.30103
+-0.29952	pouca dura	-0.30103
+-0.89708126	no caso	-0.30103
+-0.29952	caso português	-0.30103
+-1.5925919	, começando	-0.30103
+-1.3957412	a esvair-se	-0.30103
+-0.7736369	à medida	-0.30103
+-1.1921844	que avançaram	-0.30103
+-0.98921055	para as	-0.30103
+-0.29885057	avançaram as	-0.30103
+-0.5990452	as negociações	-0.30103
+-1.1921844	que levaram	-0.30103
+-0.29952	levaram ao	-0.30103
+-0.29952	ao Tratado	-0.30103
+-1.4815981	de Maastricht	-0.30103
+-1.5925919	, imposto	-0.30103
+-0.29952	imposto pela	-0.30103
+-0.29952	pela necessidade	-0.30103
+-0.89708126	« amarrar	-0.30103
+-1.3957412	a Alemanha	-0.30103
+-0.29952	Alemanha unificada	-0.30103
+-0.89708126	os responsáveis	-0.30103
+-0.29952	responsáveis portugueses	-0.30103
+-0.7736369	o despertar	-0.30103
+-0.5990452	foi duro	-0.30103
+-0.7736369	: afinal	-0.30103
+-1.5925919	, havia	-0.30103
+-0.29952	havia contrapartidas	-0.30103
+-0.5990452	as ajudas	-0.30103
+-0.29952	ajudas comunitárias	-0.30103
+-1.5925919	, sob	-0.30103
+-0.89708126	um maior	-0.30103
+-0.29952	maior aprofundamento	-0.30103
+-0.9925019	da integração	-0.30103
+-0.29952	integração europeia	-0.30103
+
+\3-grams:
+-0.037651077	ignorava . </s>
+-0.037651077	assuntos . </s>
+-0.037651077	» . </s>
+-0.037651077	Portugal . </s>
+-0.037651077	circulação . </s>
+-0.037651077	Europa . </s>
+-0.037651077	cidadãos . </s>
+-0.037651077	nacional . </s>
+-0.037651077	europeia . </s>
+-0.11998105	<s> Que a
+-0.25289077	prémio para a
+-0.27374548	Portugal , a
+-0.27374548	empregos , a
+-0.11998105	<s> Mas a
+-0.24327973	amarrar » a
+-0.11998105	que reforça a
+-0.11998105	, dada a
+-0.11998105	de si a
+-0.11998105	, ajudou a
+-0.11998105	a tornar a
+-0.11998105	, começando a
+-0.11998105	, sob a
+-0.2839119	Que a aviação
+-0.12421103	a aviação e
+-0.12421103	crescimento económico e
+-0.20297861	aviação e o
+-0.28941768	portugueses , o
+-0.123987384	foi atribuído o
+-0.23343542	e o sexo
+-0.124434836	o sexo tinham
+-0.124434836	sexo tinham tendência
+-0.12309389	tinham tendência para
+-0.12309389	o prémio para
+-0.23171271	questão : para
+-0.2019071	fazer espectáculos para
+-0.12309389	havia contrapartidas para
+-0.25895032	tendência para ter
+-0.123987384	para ter uma
+-0.123987384	, arranjou uma
+-0.28628296	inexistência de uma
+-0.2331478	ter uma qualquer
+-0.12421103	não têm qualquer
+-0.20351535	uma qualquer ligação
+-0.11601135	qualquer ligação ,
+-0.11601135	Regionais Europeias ,
+-0.11601135	jantar convívio ,
+-0.11601135	do ano ,
+-0.11601135	dos laureados ,
+-0.23801462	Delors » ,
+-0.11601135	Sala Polivalente ,
+-0.19342893	Para Portugal ,
+-0.11601135	De facto ,
+-0.11601135	que dentro ,
+-0.19342893	de Delors ,
+-0.11601135	de empregos ,
+-0.11601135	fundos estruturais ,
+-0.11601135	mais atractiva ,
+-0.11601135	euro-euforia revelou-se ,
+-0.11601135	, todavia ,
+-0.11601135	caso português ,
+-0.11601135	de Maastricht ,
+-0.11601135	responsáveis portugueses ,
+-0.11601135	: afinal ,
+-0.11601135	ajudas comunitárias ,
+-0.29007277	ligação , era
+-0.124434836	, era coisa
+-0.12175706	era coisa que
+-0.20030476	verdade é que
+-0.12175706	os homens que
+-0.12175706	-- O que
+-0.12175706	do país que
+-0.12175706	uma rede que
+-0.12175706	à medida que
+-0.12175706	as negociações que
+-0.2739898	coisa que Público
+-0.124434836	que Público &amp;
+-0.124434836	Público &amp; Privado
+-0.124434836	&amp; Privado ignorava
+-0.121312395	Privado ignorava .
+-0.121312395	dois assuntos .
+-0.19977199	anos » .
+-0.19977199	sucesso » .
+-0.19977199	em Portugal .
+-0.121312395	essa circulação .
+-0.22942631	à Europa .
+-0.121312395	dos cidadãos .
+-0.121312395	economia nacional .
+-0.121312395	integração europeia .
+-0.2839119	Mas a verdade
+-0.2897451	facto , é
+-0.12421103	a verdade é
+-0.27272823	é que os
+-0.12354039	em aproximar os
+-0.12354039	de resolver os
+-0.42317656	<s> Para os
+-0.2492057	que os homens
+-0.2739898	homens que já
+-0.124434836	que já estão
+-0.12421103	já estão há
+-0.12421103	nesta vida há
+-0.20351535	estão há décadas
+-0.124434836	há décadas envolvidos
+-0.28876364	convívio , no
+-0.12354039	décadas envolvidos no
+-0.12354039	, consubstanciada no
+-0.12354039	pouca dura no
+-0.2492057	envolvidos no negócio
+-0.12354039	no negócio dos
+-0.24801402	, um dos
+-0.12354039	mais imediatos dos
+-0.12354039	A duplicação dos
+-0.2492057	negócio dos aviões
+-0.124434836	dos aviões não
+-0.124434836	aviões não têm
+-0.20351535	têm qualquer problema
+-0.12421103	qualquer problema em
+-0.20324686	esses espectáculos em
+-0.20351535	problema em aproximar
+-0.2492057	aproximar os dois
+-0.124434836	os dois assuntos
+-0.124434836	<s> Na recente
+-0.124434836	Na recente convenção
+-0.12309389	recente convenção da
+-0.12309389	do público da
+-0.12309389	de modernização da
+-0.12309389	a ideia da
+-0.12309389	maior aprofundamento da
+-0.25895032	convenção da Associações
+-0.124434836	da Associações das
+-0.124434836	Associações das Companhias
+-0.124434836	das Companhias Aéreas
+-0.124434836	Companhias Aéreas Regionais
+-0.124434836	Aéreas Regionais Europeias
+-0.29007277	Europeias , durante
+-0.28876364	ano , um
+-0.12354039	, durante um
+-0.28563356	forma de um
+-0.2024425	marcado por um
+-0.2492057	durante um jantar
+-0.124434836	um jantar convívio
+-0.2492057	, no qual
+-0.12421103	no qual foi
+-0.12421103	o despertar foi
+-0.20351535	qual foi atribuído
+-0.23343542	atribuído o prémio
+-0.2839119	para a companhia
+-0.124434836	a companhia regional
+-0.12354039	companhia regional do
+-0.12354039	para além do
+-0.12354039	circular fora do
+-0.12354039	de antecipação do
+-0.2492057	regional do ano
+-0.2492057	um dos laureados
+-0.29007277	laureados , arranjou
+-0.28358886	sob a forma
+-0.2331478	arranjou uma forma
+-0.20351535	uma forma original
+-0.2809909	todavia , de
+-0.19606061	a forma de
+-0.11821225	forma original de
+-0.11821225	a inexistência de
+-0.11821225	pleno processo de
+-0.11821225	pelo efeito de
+-0.11821225	do projecto de
+-0.11821225	e criação de
+-0.11821225	Europa deu de
+-0.11821225	a imagem de
+-0.11821225	ser capaz de
+-0.11821225	extraordinário instrumento de
+-0.11821225	, associada de
+-0.11821225	« democracia de
+-0.11821225	ao Tratado de
+-0.11821225	pela necessidade de
+-0.28693324	original de dizer
+-0.124434836	de dizer aos
+-0.124434836	dizer aos convivas
+-0.123987384	aos convivas :
+-0.123987384	a questão :
+-0.123987384	foi duro :
+-0.28563356	necessidade de «
+-0.23228617	convivas : «
+-0.12354039	no chamado «
+-0.12354039	à sua «
+-0.2492057	: « ando
+-0.124434836	« ando nesta
+-0.124434836	ando nesta vida
+-0.20351535	vida há muitos
+-0.124434836	há muitos anos
+-0.12354039	muitos anos »
+-0.2024425	Pacote Delors »
+-0.12354039	de sucesso »
+-0.12354039	« amarrar »
+-0.12421103	<s> P. --
+-0.12421103	<s> R. --
+-0.20351535	P. -- O
+-0.2739898	O que reforça
+-0.2839119	reforça a questão
+-0.25895032	: para além
+-0.2492057	além do público
+-0.25895032	público da Sala
+-0.124434836	da Sala Polivalente
+-0.29007277	Polivalente , ninguém
+-0.2024425	, é mais
+-0.12354039	, ninguém mais
+-0.12354039	os problemas mais
+-0.12354039	Europa ainda mais
+-0.2492057	ninguém mais viu
+-0.124434836	mais viu esses
+-0.12421103	viu esses espectáculos
+-0.12421103	fácil fazer espectáculos
+-0.20324686	espectáculos em Portugal
+-0.42451456	<s> Para Portugal
+-0.20351535	R. -- De
+-0.124434836	-- De facto
+-0.2492057	é mais fácil
+-0.124434836	mais fácil fazer
+-0.25895032	espectáculos para circular
+-0.124434836	para circular fora
+-0.2492057	fora do país
+-0.2739898	país que dentro
+-0.29007277	dentro , dada
+-0.2839119	dada a inexistência
+-0.23343542	de uma rede
+-0.2739898	rede que lhes
+-0.124434836	que lhes garanta
+-0.124434836	lhes garanta essa
+-0.124434836	garanta essa circulação
+-0.124434836	<s> Em pleno
+-0.124434836	Em pleno processo
+-0.28693324	processo de euforia
+-0.124434836	de euforia provocada
+-0.124434836	euforia provocada pelo
+-0.124434836	provocada pelo efeito
+-0.28693324	efeito de antecipação
+-0.2492057	antecipação do projecto
+-0.286608	projecto de Delors
+-0.12421103	Primeiro Pacote Delors
+-0.29007277	Delors , marcado
+-0.12421103	, marcado por
+-0.12421103	de imediato por
+-0.2492057	por um forte
+-0.124434836	um forte crescimento
+-0.124434836	forte crescimento económico
+-0.20351535	económico e criação
+-0.28693324	criação de empregos
+-0.5672302	, a Europa
+-0.2583405	ideia da Europa
+-0.23286039	unificada à Europa
+-0.23343542	a Europa deu
+-0.28693324	deu de si
+-0.2839119	si a imagem
+-0.28693324	imagem de ser
+-0.124434836	de ser capaz
+-0.28693324	capaz de resolver
+-0.2492057	resolver os problemas
+-0.2492057	problemas mais imediatos
+-0.2492057	imediatos dos cidadãos
+-0.568473	, a CEE
+-0.124434836	a CEE transformou-se
+-0.124434836	CEE transformou-se num
+-0.124434836	transformou-se num extraordinário
+-0.124434836	num extraordinário instrumento
+-0.28693324	instrumento de modernização
+-0.25895032	modernização da economia
+-0.124434836	da economia nacional
+-0.42496145	<s> A duplicação
+-0.2492057	duplicação dos fundos
+-0.124434836	dos fundos estruturais
+-0.29007277	estruturais , consubstanciada
+-0.2492057	consubstanciada no chamado
+-0.2492057	chamado « Primeiro
+-0.124434836	« Primeiro Pacote
+-0.29007277	» , ajudou
+-0.2839119	ajudou a tornar
+-0.2839119	tornar a ideia
+-0.23343542	da Europa ainda
+-0.2492057	ainda mais atractiva
+-0.29007277	atractiva , associada
+-0.28693324	associada de imediato
+-0.20351535	imediato por Cavaco
+-0.124434836	por Cavaco Silva
+-0.123987384	Cavaco Silva à
+-0.123987384	a esvair-se à
+-0.123987384	Alemanha unificada à
+-0.23343542	Silva à sua
+-0.2492057	sua « democracia
+-0.28693324	democracia de sucesso
+-0.42496145	<s> A euro-euforia
+-0.124434836	A euro-euforia revelou-se
+-0.29007277	revelou-se , todavia
+-0.28693324	, de pouca
+-0.124434836	de pouca dura
+-0.2492057	dura no caso
+-0.124434836	no caso português
+-0.29007277	português , começando
+-0.2839119	começando a esvair-se
+-0.23343542	esvair-se à medida
+-0.2739898	medida que avançaram
+-0.2586453	contrapartidas para as
+-0.12421103	que avançaram as
+-0.20351535	avançaram as negociações
+-0.2739898	negociações que levaram
+-0.124434836	que levaram ao
+-0.124434836	levaram ao Tratado
+-0.28693324	Tratado de Maastricht
+-0.29007277	Maastricht , imposto
+-0.124434836	, imposto pela
+-0.124434836	imposto pela necessidade
+-0.2492057	de « amarrar
+-0.2839119	» a Alemanha
+-0.124434836	a Alemanha unificada
+-0.2492057	Para os responsáveis
+-0.124434836	os responsáveis portugueses
+-0.23343542	, o despertar
+-0.20351535	despertar foi duro
+-0.23343542	duro : afinal
+-0.29007277	afinal , havia
+-0.124434836	, havia contrapartidas
+-0.20351535	para as ajudas
+-0.124434836	as ajudas comunitárias
+-0.29007277	comunitárias , sob
+-0.2492057	de um maior
+-0.124434836	um maior aprofundamento
+-0.25895032	aprofundamento da integração
+-0.124434836	da integração europeia
+
+\end\
