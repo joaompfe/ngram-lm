@@ -4,7 +4,6 @@ extern "C" {
 #include "ngram_trie.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <limits.h>
 }
 
 #include <gtest/gtest.h>
@@ -12,7 +11,7 @@ extern "C" {
 
 TEST(TrieTest, TrieCreation)
 {
-    struct trie *trie = new_trie_from_arpa("./data/train.arpa", 3);
+    struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
     EXPECT_EQ(trie->n, 3);
     EXPECT_EQ(trie->n_ngrams[0], 209);
     EXPECT_EQ(trie->n_ngrams[1], 323);
