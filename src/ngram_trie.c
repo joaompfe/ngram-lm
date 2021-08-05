@@ -37,6 +37,10 @@ static uint64_t get_context_id(const word_id_type *context_words_ids, int contex
 static struct tmp_ngram get_tmp_ngram(const struct trie *trie, int n, uint64_t at);
 static void set_tmp_ngram(const struct trie *trie, int n, uint64_t at, struct tmp_ngram *ngram);
 
+static void fill_in_indexes(const struct trie *trie, int n);
+
+static void reduce_last_order_ngram_array(struct trie *trie);
+
 struct trie *new_trie_from_arpa(const char *file_path, const unsigned short order) {
     FILE *fp = fopen(file_path, "r");
     if (fp == NULL)
@@ -62,45 +66,41 @@ struct trie *new_trie_from_arpa(const char *file_path, const unsigned short orde
     return t;
 }
 
-static void read_n_ngrams(const int order, FILE* header, uint64_t *n_ngrams)
+#define FOR_SECTION_LINE(sec, title, do) \
+char *line = NULL;                       \
+size_t len = 0;                          \
+if (getline(&line, &len, sec) == -1) exit(EXIT_FAILURE); \
+if (strcmp(line, title) != 0) {          \
+    fprintf(stderr, "'%s' expected at the beginning of the ARPA file, but '%s' was found instead.", title, line); \
+    exit(EXIT_FAILURE);                  \
+}                                        \
+uint64_t i = 0;                          \
+while (getline(&line, &len, sec) != -1 && line[0] != '\n') {                                                      \
+    do                                   \
+    i++;                                 \
+}                                        \
+if (line)                                \
+    free(line);
+
+#define PROGRESS_BAR(desc, i, total) \
+if (((i) + 1) % ((total) / 100) == 0) { \
+printf("\r%s: %d%%", desc, (int) (((i) + 1) * 100 / (total))); \
+fflush(stdout);                      \
+}
+
+static void read_n_ngrams(const int order, FILE *header, uint64_t *n_ngrams)
 {
-    char *line = NULL;
-    size_t len = 0;
-
-    getline(&line, &len, header);  // read '\arpa\' line
-    if (strcmp(line, "\\data\\\n") != 0) {
-        fprintf(stderr, "'\\data\\' expected at the beginning of the ARPA file, but '%s' was found instead.",
-                line);
-        exit(EXIT_FAILURE);
-    }
-
-    int i = 0;
-    while (getline(&line, &len, header) != -1 && line[0] != '\n') {
-        if (i < order && sscanf(line, "ngram %*d=%lu", &n_ngrams[i++]) == EOF)
+    FOR_SECTION_LINE(header, "\\data\\\n",
+        if (i < order && sscanf(line, "ngram %*d=%lu", &n_ngrams[i]) == EOF)
             exit(EXIT_FAILURE);
-    }
-
-    if (line)
-        free(line);
+    )
 }
 
 static void create_vocab_lookup(const uint64_t n_unigrams, FILE *body, struct trie *trie)
 {
-    char *line = NULL;
-    size_t len = 0;
-
-    getline(&line, &len, body);  // read '\n-grams:' line
-    if (strcmp(line, "\\1-grams:\n") != 0) {
-        fprintf(stderr, "'\\1-grams:' expected at the beginning of the 1-grams section of the ARPA file, but"
-                        " '%s' was found instead.", line);
-        exit(EXIT_FAILURE);
-    }
-
     trie->vocab_lookup = malloc(n_unigrams * sizeof(word_id_type));
-
-    uint64_t i = 0;
     char word[WORD_MAX_LENGTH];
-    while (getline(&line, &len, body) != -1 && line[0] != '\n') {
+    FOR_SECTION_LINE(body, "\\1-grams:\n",
         double prob;
         if (sscanf(line, "%lf%s%*f", &prob, word) == EOF)
             exit(EXIT_FAILURE);
@@ -111,12 +111,8 @@ static void create_vocab_lookup(const uint64_t n_unigrams, FILE *body, struct tr
         }
 
         word_id_type hash = qhashmurmur3_32(word, strlen(word));
-        trie->vocab_lookup[i++] = hash;
-    }
-
-    if (line)
-        free(line);
-
+        trie->vocab_lookup[i] = hash;
+    )
     qsort(trie->vocab_lookup, n_unigrams, sizeof(word_id_type), cmp_vocab_words);
 }
 
@@ -130,38 +126,25 @@ static int cmp_vocab_words(const void *a, const void *b)
 
 static void populate_ngrams(const int order, FILE *body, struct trie *trie)
 {
-    char *line = NULL;
-    size_t len = 0;
-    const uint64_t *n_ngrams = trie->n_ngrams;
-
     populate_unigrams(order, body, trie);
-
     for (int n = 2; n <= order; n++) {
-        printf("Populating %d-grams\n", n);
-        getline(&line, &len, body);  // read '\n-grams:' line
-//        if (strcmp(line, "\\%d-grams:\n") != 0) {  //TODO: will '%d' work?
-//            fprintf(stderr, "'\\%d-grams:' expected at the beginning of the %d-grams section of the ARPA file, but"
-//                            " '%s' was found instead.", n, n, line);
-//            exit(EXIT_FAILURE);
-//        }
+        printf("\nPopulating %d-grams", n);
 
         uint8_t index_size = ceil_log2((n < order) ? trie->n_ngrams[n] : trie->n_ngrams[n-2]);
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size, index_size };
+        trie->ngrams[n-1] = new_array(sizeof(float) * 8 + trie->word_id_size + index_size, trie->n_ngrams[n-1] + 1);
+        printf("\nArray allocated\n");
 
-        trie->ngrams[n-1] = new_array(sizes[0] + sizes[1] + sizes[2], trie->n_ngrams[n-1] + 1);
-        printf("Array allocated\n");
-
-        uint64_t i = 0;
-        while (getline(&line, &len, body) != -1 && line[0] != '\n') {
-            struct tmp_ngram tmp = {0, 0, 0 };
+        char section_tile[16];
+        snprintf(section_tile, 16, "\\%d-grams:\n", n);
+        FOR_SECTION_LINE(body, section_tile,
+            struct tmp_ngram tmp;
+            tmp.context_id = 0;
+            tmp.probability = 0;
+            tmp.word_id = 0;
             parse_ngram_definition(line, n, trie, &tmp.probability, &tmp.context_id, &tmp.word_id);
             set_tmp_ngram(trie, n, i, &tmp);
-            i++;
-            if (i % 10000 == 0) {
-                printf("\rReading ARPA: %lu%%", i * 100 / trie->n_ngrams[n-1]);
-                fflush(stdout);
-            }
-        }
+            PROGRESS_BAR("Reading ARPA", i, trie->n_ngrams[n-1])
+        )
         struct tmp_ngram dummy = {0, trie->n_ngrams[0], trie->n_ngrams[n - 2] }; // TODO shouldn't these be subtracted with 1, won't they overflow on limit situation?
         set_tmp_ngram(trie, n, i, &dummy);
 
@@ -169,80 +152,71 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
         const int tmp_sizes[] = { sizeof(float) * 8, trie->word_id_size, ceil_log2(trie->n_ngrams[n-2]) };
         array_sort_r(trie->ngrams[n - 1], cmp_tmp_grams, (void *) tmp_sizes);
 
-        // fill in the index of dummy ngram in the previous order ngram array
-        dummy = get_tmp_ngram(trie, n - 1, trie->n_ngrams[n - 2]);
-        dummy.context_id = i;
-        set_tmp_ngram(trie, n - 1, trie->n_ngrams[n - 2], &dummy);
-
-        // fill in the indexes of all ngrams in the previous order ngram array
-        uint64_t context_id = get_tmp_ngram(trie, n, 0).context_id;
-        struct ngram parent_ngram = get_ngram(trie, n - 1, context_id);
-        parent_ngram.index = 0;
-        set_ngram(trie, n - 1, context_id, &parent_ngram);
-        for (i = 0; i < trie->n_ngrams[n-1]; i++) {
-            while (context_id < get_tmp_ngram(trie, n, i).context_id) {
-                context_id++;
-                parent_ngram = get_ngram(trie, n - 1, context_id);
-                parent_ngram.index = i;
-                set_ngram(trie, n - 1, context_id, &parent_ngram);
-            }
-            if (i % 10000 == 0) {
-                printf("\rFilling in the indexes: %lu%%", i * 100 / trie->n_ngrams[n-1]);
-                fflush(stdout);
-            }
-        }
-        printf("\n");
+        fill_in_indexes(trie, n - 1);
     }
-    // reduce N-gram array (by inefficiently creating a new smaller array and copying the elems from the old)
-    struct array *old = trie->ngrams[order-1];
-    struct array *new = new_array(sizeof(float) * 8 + trie->word_id_size, trie->n_ngrams[order-1]);
-    for (int i = 0; i < trie->n_ngrams[order-1]; i++) {
-        trie->ngrams[order-1] = old;
-        struct tmp_ngram ngram = get_tmp_ngram(trie, order, i);
-        trie->ngrams[order-1] = new;
-        set_ngram(trie, order, i, (struct ngram *) &ngram);
-        if (i % 10000 == 0) {
-            printf("\rReducing N-gram array: %lu%%", i * 100 / trie->n_ngrams[order-1]);
-            fflush(stdout);
-        }
-    }
-    delete_array(old);
-
-    if (line)
-        free(line);
+    printf("\n");
+    reduce_last_order_ngram_array(trie);
 }
 
 static void populate_unigrams(const int order, FILE *body, struct trie *trie)
 {
-    char *line = NULL;
-    size_t len = 0;
-    getline(&line, &len, body);  // read '\n-grams:' line
-    if (strcmp(line, "\\1-grams:\n") != 0) {
-        fprintf(stderr, "'\\1-grams:' expected at the beginning of the 1-grams section of the ARPA file, but"
-                        " '%s' was found instead.", line);
-        exit(EXIT_FAILURE);
-    }
-
+    printf("\nPopulating 1-grams");
     trie->ngrams[0] = new_array(ceil_log2(trie->n_ngrams[1]) + sizeof(float) * 8, trie->n_ngrams[0] + 1);
+    printf("\nArray allocated\n");
     struct unigram {
         float probability;
         uint64_t index;
     };
-
-    int i = 0;
     char word[WORD_MAX_LENGTH];
-    while (getline(&line, &len, body) != -1 && line[0] != '\n') {
+    FOR_SECTION_LINE(body, "\\1-grams:\n",
         float prob;
         if (sscanf(line, "%f%s%*f", &prob, word) == EOF)
-            exit(EXIT_FAILURE);
+         exit(EXIT_FAILURE);
 
         word_id_type id = get_word_id(word, trie);
-        struct unigram unigram = { prob, 0 };
+        struct unigram unigram;
+        unigram.probability = prob;
+        unigram.index = 0;
         array_set(trie->ngrams[0], id, &unigram);
-    }
+        PROGRESS_BAR("Reading ARPA", i, trie->n_ngrams[0])
+    )
+}
 
-    if (line)
-        free(line);
+static void reduce_last_order_ngram_array(struct trie *trie)
+{
+    const int n = trie->n;
+    struct array *old = trie->ngrams[n-1];
+    struct array *new = new_array(sizeof(float) * 8 + trie->word_id_size, trie->n_ngrams[n-1]);
+    for (int i = 0; i < trie->n_ngrams[n-1]; i++) {
+        trie->ngrams[n-1] = old;
+        struct tmp_ngram ngram = get_tmp_ngram(trie, n, i);
+        trie->ngrams[n-1] = new;
+        set_ngram(trie, n, i, (struct ngram *) &ngram);
+        PROGRESS_BAR("Reducing N-gram array", i, trie->n_ngrams[n-1])
+    }
+    delete_array(old);
+}
+
+static void fill_in_indexes(const struct trie *trie, int n)
+{
+    n++;
+    struct ngram dummy = get_ngram(trie, n-1, trie->n_ngrams[n-2]);
+    dummy.index = trie->n_ngrams[n-1];
+    set_ngram(trie, n-1, trie->n_ngrams[n-2], &dummy);
+
+    uint64_t context_id = get_tmp_ngram(trie, n, 0).context_id;
+    struct ngram parent_ngram = get_ngram(trie, n-1, context_id);
+    parent_ngram.index = 0;
+    set_ngram(trie, n-1, context_id, &parent_ngram);
+    for (int i = 0; i < trie->n_ngrams[n-1]; i++) {
+        while (context_id < get_tmp_ngram(trie, n, i).context_id) {
+            context_id++;
+            parent_ngram = get_ngram(trie, n-1, context_id);
+            parent_ngram.index = i;
+            set_ngram(trie, n-1, context_id, &parent_ngram);
+        }
+        PROGRESS_BAR("Filling in the indexes", i, trie->n_ngrams[n-1])
+    }
 }
 
 static int64_t cmp_tmp_grams(void *a, void *b, void *arg)
