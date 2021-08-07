@@ -9,6 +9,7 @@
 #include <math.h>
 
 #include <qlibc.h>
+#include <errno.h>
 
 #define ceil_log2(x) ((uint8_t) ceil(log2(x)))
 #define WORD_MAX_LENGTH 256
@@ -36,15 +37,27 @@ static int64_t cmp_ngram(void *a, void *b, void *arg);
 static uint64_t get_context_id(const word_id_type *context_words_ids, int context_len, const struct trie *trie);
 static struct tmp_ngram get_tmp_ngram(const struct trie *trie, int n, uint64_t at);
 static void set_tmp_ngram(const struct trie *trie, int n, uint64_t at, struct tmp_ngram *ngram);
-
 static void fill_in_indexes(const struct trie *trie, int n);
-
 static void reduce_last_order_ngram_array(struct trie *trie);
 
-struct trie *new_trie_from_arpa(const char *file_path, const unsigned short order) {
-    FILE *fp = fopen(file_path, "r");
-    if (fp == NULL)
+void build_trie_from_arpa(const char *arpa_path, unsigned short order, const char *out_path)
+{
+    struct trie *t = new_trie_from_arpa(arpa_path, order);
+    FILE *f = fopen(out_path, "wb");
+    if (f == NULL) {
+        fprintf(stderr, "Error while opening %s: %s.\n", out_path, strerror(errno));
         exit(EXIT_FAILURE);
+    }
+    trie_fwrite(t, f);
+    fclose(f);
+}
+
+struct trie *new_trie_from_arpa(const char *arpa_path, const unsigned short order) {
+    FILE *fp = fopen(arpa_path, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "Error while opening %s: %s.\n", arpa_path, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
 
     struct trie *t = malloc(sizeof(struct trie));
     t->n = order;
@@ -66,12 +79,49 @@ struct trie *new_trie_from_arpa(const char *file_path, const unsigned short orde
     return t;
 }
 
+void trie_fwrite(const struct trie *t, FILE *f)
+{
+    fwrite(t, sizeof(struct trie), 1, f);
+    fwrite(t->n_ngrams, sizeof(uint64_t), t->n, f);
+    fwrite(t->vocab_lookup, sizeof(word_id_type), t->n_ngrams[0], f);
+    for (int i = 0; i < t->n; i++) {
+        array_fwrite(t->ngrams[i], f);
+    }
+}
+
+size_t trie_fread(struct trie *t, FILE *f)
+{
+    size_t read = fread(t, sizeof(struct trie), 1, f);
+    if (read != 1) {
+        fprintf(stderr, "Error while reading struct trie from file.\n");
+        return read;
+    }
+    read = fread(t->n_ngrams, sizeof(uint64_t), t->n, f);
+    if (read != t->n) {
+        fprintf(stderr, "Error while reading trie->n_ngrams from file.\n");
+        return read;
+    }
+    read = fread(t->vocab_lookup, sizeof(word_id_type), t->n_ngrams[0], f);
+    if (read != t->n_ngrams[0]) {
+        fprintf(stderr, "Error while reading vocabulary lookup from file.\n");
+        return read;
+    }
+    for (int i = 0; i < t->n; i++) {
+        read = array_fread(t->ngrams[i], f);
+        if (read != 1) {
+            fprintf(stderr, "Error while reading trie->ngrams[%d] from file.\n", i);
+            return read;
+        }
+    }
+    return 1;
+}
+
 #define FOR_SECTION_LINE(sec, title, do) \
 char *line = NULL;                       \
 size_t len = 0;                          \
 if (getline(&line, &len, sec) == -1) exit(EXIT_FAILURE); \
 if (strcmp(line, title) != 0) {          \
-    fprintf(stderr, "'%s' expected at the beginning of the ARPA file, but '%s' was found instead.", title, line); \
+    fprintf(stderr, "'%s' expected at the beginning of the ARPA file, but '%s' was found instead.\n", title, line); \
     exit(EXIT_FAILURE);                  \
 }                                        \
 uint64_t i = 0;                          \
@@ -106,7 +156,7 @@ static void create_vocab_lookup(const uint64_t n_unigrams, FILE *body, struct tr
             exit(EXIT_FAILURE);
 
         if (strlen(word) > KNOWN_PORTUGUESE_WORD_MAX_LENGTH) {
-            fprintf(stderr, "a word with %lu characters was found at the %lu-th line of the 1-grams section",
+            fprintf(stderr, "a word with %lu characters was found at the %lu-th line of the 1-grams section.\n",
                     strlen(word), i+1);
         }
 
@@ -134,8 +184,8 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
         trie->ngrams[n-1] = new_array(sizeof(float) * 8 + trie->word_id_size + index_size, trie->n_ngrams[n-1] + 1);
         printf("\nArray allocated\n");
 
-        char section_tile[16];
-        snprintf(section_tile, 16, "\\%d-grams:\n", n);
+        char section_tile[24];
+        snprintf(section_tile, 24, "\\%d-grams:\n", n);
         FOR_SECTION_LINE(body, section_tile,
             struct tmp_ngram tmp;
             tmp.context_id = 0;
@@ -365,7 +415,7 @@ static uint64_t get_context_id(const word_id_type *context_words_ids, const int 
         struct ngram key = { 0, context_words_ids[i], 0};
         if (array_bsearch_r_within(&key, trie->ngrams[i], cmp_ngram, (void *) sizes,
                                    left_index, right_index, &index) != 0) {
-            fprintf(stderr, "word id %d not found in [%lu, %lu] slice of %d-gram array", context_words_ids[i],
+            fprintf(stderr, "word id %d not found in [%lu, %lu] slice of %d-gram array.\n", context_words_ids[i],
                     left_index, right_index, i + 1);
             exit(EXIT_FAILURE);
         }
@@ -385,7 +435,7 @@ struct ngram query(const struct trie *trie, char const **words, const int n)
         struct ngram key = { 0, get_word_id(words[i], trie), 0};
         if (array_bsearch_r_within(&key, trie->ngrams[i], cmp_ngram, (void *) sizes,
                                    left_index, right_index, &index) != 0) {
-            fprintf(stderr, "word id %d not found in [%lu, %lu] slice of %d-gram array", get_word_id(words[i], trie),
+            fprintf(stderr, "word id %d not found in [%lu, %lu] slice of %d-gram array.\n", get_word_id(words[i], trie),
                     left_index, right_index, i + 1);
             exit(EXIT_FAILURE);
         }

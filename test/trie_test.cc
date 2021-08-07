@@ -9,7 +9,7 @@ extern "C" {
 #include <gtest/gtest.h>
 
 
-TEST(TrieTest, TrieCreation)
+TEST(Trie, TrieCreation)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
     EXPECT_EQ(trie->n, 3);
@@ -18,7 +18,7 @@ TEST(TrieTest, TrieCreation)
     EXPECT_EQ(trie->n_ngrams[2], 325);
 }
 
-TEST(TrieTest, VocabLookupArray)
+TEST(Trie, VocabLookupArray)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
     for (int i = 1; i < trie->n_ngrams[0]; i++) {
@@ -26,7 +26,7 @@ TEST(TrieTest, VocabLookupArray)
     }
 }
 
-TEST(TrieTest, UnigramArray)
+TEST(Trie, UnigramArray)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
     struct ngram ngram;
@@ -44,7 +44,7 @@ TEST(TrieTest, UnigramArray)
     EXPECT_EQ(-2.45805f, ngram.probability);
 }
 
-TEST(TrieTest, UnigramArrayIndexes)
+TEST(Trie, UnigramArrayIndexes)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
 
@@ -72,7 +72,7 @@ TEST(TrieTest, UnigramArrayIndexes)
     EXPECT_EQ(bigram.word_id, (id0 > id1) ? id0 : id1);
 }
 
-TEST(TrieTest, BigramArrayIndexes)
+TEST(Trie, BigramArrayIndexes)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
 
@@ -91,7 +91,7 @@ TEST(TrieTest, BigramArrayIndexes)
     EXPECT_EQ(trigram.word_id, get_word_id("duro", trie));
 }
 
-TEST(TrieTest, Query)
+TEST(Trie, Query)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
     char const *grams[2];
@@ -100,4 +100,34 @@ TEST(TrieTest, Query)
     struct ngram ngram = query(trie, (char const **) grams, 2);
     EXPECT_EQ(-0.29952f, ngram.probability);
     EXPECT_EQ(ngram.word_id, get_word_id("português", trie));
+}
+
+TEST(Trie, LoadAndSaveFromFile)
+{
+    const char *arpa_path = "./data/tmp.arpa";
+    const char *out_path = "./data/tmp.bin";
+    FILE* f = fopen(out_path, "r");
+    if (f != NULL) {
+        std::remove(out_path);
+    }
+    build_trie_from_arpa(arpa_path, 3, out_path);
+    f = fopen(out_path, "rb");
+    ASSERT_TRUE(f != NULL);
+    fclose(f);
+    struct trie trie;
+    f = fopen(out_path, "rb");
+    size_t read = trie_fread(&trie, f);
+    EXPECT_EQ(read, 1);
+    fclose(f);
+    EXPECT_EQ(trie.n, 3);
+    EXPECT_EQ(trie.n_ngrams[0], 209);
+    EXPECT_EQ(trie.n_ngrams[1], 323);
+    EXPECT_EQ(trie.n_ngrams[2], 325);
+    char const *grams[2];
+    grams[0] = "caso";
+    grams[1] = "português";
+    struct ngram ngram = query(&trie, (char const **) grams, 2);
+    EXPECT_EQ(-0.29952f, ngram.probability);
+    EXPECT_EQ(ngram.word_id, get_word_id("português", &trie));
+    std::remove(out_path);
 }

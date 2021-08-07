@@ -189,3 +189,26 @@ void array_set_compacted(const struct array *arr, uint64_t at, void **elems, con
     elems_compact(elems, tmp, sizes, n);
     array_set(arr, at, tmp);
 }
+
+void array_fwrite(const struct array *arr, FILE *out)
+{
+    fwrite(arr, sizeof(struct array), 1, out);
+    size_t n = arr->elem_size * arr->len / 8 + 1;
+    fwrite(arr->elems, sizeof(uint8_t), n, out);
+}
+
+size_t array_fread(struct array *arr, FILE *in)
+{
+    size_t read = fread(arr, sizeof(struct array), 1, in);
+    if (read != 1) {
+        fprintf(stderr, "Error while reading struct array from file.\n");
+        return read;
+    }
+    size_t n = arr->elem_size * arr->len / 8 + 1;
+    read = fread(arr->elems, sizeof(uint8_t), n, in);
+    if (read != n) {
+        fprintf(stderr, "Error while reading array->elems_size.\n");
+        return read;
+    }
+    return 1;
+}

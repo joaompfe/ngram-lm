@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 struct array {
     uint8_t elem_size;
@@ -148,5 +149,20 @@ void elems_compact(void **elems, void *dest, const int *sizes, int n);
  * @param n
  */
 void array_set_compacted(const struct array *arr, uint64_t at, void **elems, const int *sizes, int n);
+
+/**
+ * Writes the array pointed by `arr` into file pointed by `out` in binary format.
+ * @param arr
+ * @param out
+ */
+void array_fwrite(const struct array *arr, FILE *out);
+
+/**
+ * Writes the array in the file pointed by `out` in binary format to the array pointed by `arr`.
+ * @param arr
+ * @param in
+ * @return
+ */
+size_t array_fread(struct array *arr, FILE *in);
 
 #endif //NGRAM_LM_ARRAY_H

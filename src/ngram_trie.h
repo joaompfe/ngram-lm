@@ -27,9 +27,12 @@ struct ngram {
     uint64_t index;
 };
 
-struct trie *new_trie_from_arpa(const char *file_path, unsigned short order);
+void build_trie_from_arpa(const char *arpa_path, unsigned short order, const char *out_path);
+struct trie *new_trie_from_arpa(const char *arpa_path, unsigned short order);
 word_id_type get_word_id(const char *word, const struct trie *trie);
 struct ngram get_ngram(const struct trie *trie, int n, uint64_t at);
 struct ngram query(const struct trie *trie, char const **words, int n);
+void trie_fwrite(const struct trie *t, FILE *f);
+size_t trie_fread(struct trie *t, FILE *f);
 
 #endif //NGRAM_LM_NGRAM_TRIE_H
