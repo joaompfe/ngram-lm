@@ -7,4 +7,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(qlibc)
 
-target_link_libraries(ngram_lm PRIVATE qlibc-static)
+target_link_libraries(ngram_lm PRIVATE qlibc-static m)
+
+add_executable(build build.c)
+target_link_libraries(build ngram_lm)
