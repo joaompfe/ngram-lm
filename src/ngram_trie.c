@@ -39,6 +39,10 @@ static struct tmp_ngram get_tmp_ngram(const struct trie *trie, int n, uint64_t a
 static void set_tmp_ngram(const struct trie *trie, int n, uint64_t at, struct tmp_ngram *ngram);
 static void fill_in_indexes(const struct trie *trie, int n);
 static void reduce_last_order_ngram_array(struct trie *trie);
+static unsigned long ngram_size(const struct trie *trie, int n);
+static unsigned long tmp_ngram_size(const struct trie *trie, int n);
+static void ngram_sizes(const struct trie *trie, int n, unsigned int *dest);
+static void tmp_ngram_sizes(const struct trie *trie, int n, unsigned int *dest);
 
 void build_trie_from_arpa(const char *arpa_path, unsigned short order, const char *out_path)
 {
@@ -180,8 +184,7 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
     for (int n = 2; n <= order; n++) {
         printf("\nPopulating %d-grams", n);
 
-        uint8_t index_size = ceil_log2((n < order) ? trie->n_ngrams[n] : trie->n_ngrams[n-2]);
-        trie->ngrams[n-1] = new_array(sizeof(float) * 8 + trie->word_id_size + index_size, trie->n_ngrams[n-1] + 1);
+        trie->ngrams[n-1] = new_array(tmp_ngram_size(trie, n), trie->n_ngrams[n-1] + 1);
         printf("\nArray allocated\n");
 
         char section_tile[24];
@@ -199,7 +202,8 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
         set_tmp_ngram(trie, n, i, &dummy);
 
         printf("\nSorting... This might take a while...\n");
-        const int tmp_sizes[] = { sizeof(float) * 8, trie->word_id_size, ceil_log2(trie->n_ngrams[n-2]) };
+        unsigned int tmp_sizes[3];
+        tmp_ngram_sizes(trie, n, tmp_sizes);
         array_sort_r(trie->ngrams[n - 1], cmp_tmp_grams, (void *) tmp_sizes);
 
         fill_in_indexes(trie, n - 1);
@@ -211,7 +215,7 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
 static void populate_unigrams(const int order, FILE *body, struct trie *trie)
 {
     printf("\nPopulating 1-grams");
-    trie->ngrams[0] = new_array(ceil_log2(trie->n_ngrams[1]) + sizeof(float) * 8, trie->n_ngrams[0] + 1);
+    trie->ngrams[0] = new_array(ngram_size(trie, 1), trie->n_ngrams[0] + 1);
     printf("\nArray allocated\n");
     struct unigram {
         float probability;
@@ -236,7 +240,7 @@ static void reduce_last_order_ngram_array(struct trie *trie)
 {
     const int n = trie->n;
     struct array *old = trie->ngrams[n-1];
-    struct array *new = new_array(sizeof(float) * 8 + trie->word_id_size, trie->n_ngrams[n-1]);
+    struct array *new = new_array(ngram_size(trie, trie->n), trie->n_ngrams[n-1]);
     for (int i = 0; i < trie->n_ngrams[n-1]; i++) {
         trie->ngrams[n-1] = old;
         struct tmp_ngram ngram = get_tmp_ngram(trie, n, i);
@@ -272,9 +276,8 @@ static void fill_in_indexes(const struct trie *trie, int n)
 static int64_t cmp_tmp_grams(void *a, void *b, void *arg)
 {
     struct tmp_ngram tmp;
-    const int *sizes = (const int*) arg;
+    const unsigned int *sizes = (const unsigned int*) arg;
     void *dest[] = { &tmp.probability, &tmp.word_id, &tmp.context_id };
-    // TODO create extract_ngram function for these situations
     elem_extract(a, dest, sizes, 3);
     uint64_t a_context_id = tmp.context_id;
     word_id_type a_id = tmp.word_id;
@@ -287,7 +290,7 @@ static int64_t cmp_tmp_grams(void *a, void *b, void *arg)
         if (a_id < b_id) return -1;
         else if (a_id > b_id) return 1;
         else return 0;
-    };
+    }
 }
 
 static void parse_ngram_definition(const char *line, const int n, const struct trie * trie, float *prob,
@@ -322,17 +325,17 @@ word_id_type get_word_id(const char *word, const struct trie *trie)
 struct ngram get_ngram(const struct trie *trie, const int n, uint64_t at)
 {
     struct ngram ngram = { 0, 0, 0 };
+    unsigned int sizes[3];
+    ngram_sizes(trie, n, sizes);
     if (n == 1) {
         void *dest[] = { &ngram.probability, &ngram.index };
-        const int sizes[] = { sizeof(float) * 8, ceil_log2(trie->n_ngrams[n]) };
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 2);
     } else if (n < trie->n) {
         void *dest[] = { &ngram.probability, &ngram.word_id, &ngram.index };
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size, ceil_log2(trie->n_ngrams[n]) };
+
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 3);
     } else {
         void *dest[] = { &ngram.probability, &ngram.word_id };
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size };
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 2);
     }
     return ngram;
@@ -341,17 +344,16 @@ struct ngram get_ngram(const struct trie *trie, const int n, uint64_t at)
 static void set_ngram(const struct trie *trie, const int n, uint64_t at, struct ngram *ngram)
 {
     uint8_t tmp[trie->ngrams[n-1]->elem_size / 8 + 1];
+    unsigned int sizes[3];
+    ngram_sizes(trie, n, sizes);
     if (n == 1) {
         void *elems[] = { &ngram->probability, &ngram->index };
-        const int sizes[] = { sizeof(float) * 8, ceil_log2(trie->n_ngrams[n]) };
         elems_compact(elems, tmp, sizes, 2);
     } else if (n < trie->n) {
         void *elems[] = { &ngram->probability, &ngram->word_id, &ngram->index };
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size, ceil_log2(trie->n_ngrams[n]) };
         elems_compact(elems, tmp, sizes, 3);
     } else {
         void *elems[] = { &ngram->probability, &ngram->word_id };
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size };
         elems_compact(elems, tmp, sizes, 2);
     }
     array_set(trie->ngrams[n-1], at, tmp);
@@ -360,14 +362,13 @@ static void set_ngram(const struct trie *trie, const int n, uint64_t at, struct 
 static struct tmp_ngram get_tmp_ngram(const struct trie *trie, const int n, uint64_t at)
 {
     struct tmp_ngram ngram = {0, 0, 0 };
+    unsigned int sizes[3];
+    tmp_ngram_sizes(trie, n, sizes);
     if (n == 1) {
         void *dest[] = { &ngram.probability, &ngram.context_id };
-        const int sizes[] = { sizeof(float) * 8, ceil_log2(trie->n_ngrams[n]) };
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 2);
     } else {
         void *dest[] = { &ngram.probability, &ngram.word_id, &ngram.context_id };
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size,
-                              ceil_log2((n < trie->n) ? trie->n_ngrams[n] : trie->n_ngrams[n-2]) };
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 3);
     }
     return ngram;
@@ -376,14 +377,13 @@ static struct tmp_ngram get_tmp_ngram(const struct trie *trie, const int n, uint
 static void set_tmp_ngram(const struct trie *trie, const int n, uint64_t at, struct tmp_ngram *ngram)
 {
     uint8_t tmp[trie->ngrams[n-1]->elem_size / 8 + 1];
+    unsigned int sizes[3];
+    tmp_ngram_sizes(trie, n, sizes);
     if (n == 1) {
         void *elems[] = { &ngram->probability, &ngram->context_id };
-        const int sizes[] = { sizeof(float) * 8, ceil_log2(trie->n_ngrams[n]) };
         elems_compact(elems, tmp, sizes, 2);
     } else {
         void *elems[] = { &ngram->probability, &ngram->word_id, &ngram->context_id };
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size,
-                              ceil_log2((n < trie->n) ? trie->n_ngrams[n] : trie->n_ngrams[n-2]) };
         elems_compact(elems, tmp, sizes, 3);
     }
     array_set(trie->ngrams[n-1], at, tmp);
@@ -392,7 +392,7 @@ static void set_tmp_ngram(const struct trie *trie, const int n, uint64_t at, str
 static int64_t cmp_ngram(void *a, void *b, void *arg)
 {
     struct ngram tmp;
-    const int *sizes = (const int*) arg;
+    const unsigned int *sizes = (const unsigned int*) arg;
     void *dest[] = { &tmp.probability, &tmp.word_id, &tmp.index };
     elem_extract(a, dest, sizes, 3);
     word_id_type a_id = tmp.word_id;
@@ -411,8 +411,9 @@ static uint64_t get_context_id(const word_id_type *context_words_ids, const int 
         struct ngram adjacent_ngram = get_ngram(trie, i, index + 1);
         uint64_t left_index = ngram.index;
         uint64_t right_index = adjacent_ngram.index;
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size, ceil_log2(trie->n_ngrams[i+1]) };
-        struct ngram key = { 0, context_words_ids[i], 0};
+        unsigned sizes[3];
+        ngram_sizes(trie, i+1, sizes);
+        struct ngram key = {0, context_words_ids[i], 0};
         if (array_bsearch_r_within(&key, trie->ngrams[i], cmp_ngram, (void *) sizes,
                                    left_index, right_index, &index) != 0) {
             fprintf(stderr, "word id %d not found in [%lu, %lu] slice of %d-gram array.\n", context_words_ids[i],
@@ -431,7 +432,8 @@ struct ngram query(const struct trie *trie, char const **words, const int n)
         struct ngram adjacent_ngram = get_ngram(trie, i, index + 1);
         uint64_t left_index = ngram.index;
         uint64_t right_index = adjacent_ngram.index;
-        const int sizes[] = { sizeof(float) * 8, trie->word_id_size, ceil_log2(trie->n_ngrams[i+1]) };
+        unsigned sizes[3];
+        ngram_sizes(trie, i+1, sizes);
         struct ngram key = { 0, get_word_id(words[i], trie), 0};
         if (array_bsearch_r_within(&key, trie->ngrams[i], cmp_ngram, (void *) sizes,
                                    left_index, right_index, &index) != 0) {
@@ -441,4 +443,38 @@ struct ngram query(const struct trie *trie, char const **words, const int n)
         }
     }
     return get_ngram(trie, n, index);
+}
+
+static unsigned long ngram_size(const struct trie *trie, int n)
+{
+    if (n == 1)
+        return 8 * (sizeof(float)) + ceil_log2(trie->n_ngrams[n]);
+    if (n == trie->n)
+        return 8 * sizeof(float) + ceil_log2(trie->n_ngrams[0]);
+    return 8 * (sizeof(float)) + ceil_log2(trie->n_ngrams[0]) + ceil_log2(trie->n_ngrams[n]);
+}
+
+static unsigned long tmp_ngram_size(const struct trie *trie, int n)
+{
+    if (n == 1)
+        return 8 * (sizeof(float)) + ceil_log2(trie->n_ngrams[n]);
+    if (n == trie->n)
+        return 8 * (sizeof(float)) + ceil_log2(trie->n_ngrams[0]) + ceil_log2(trie->n_ngrams[n-2]);
+    return 8 * (sizeof(float)) + ceil_log2(trie->n_ngrams[0]) + ceil_log2(trie->n_ngrams[n]);
+}
+
+static void ngram_sizes(const struct trie *trie, int n, unsigned int *dest)
+{
+    dest[0] = 8 * sizeof(float);
+    dest[1] = (n == 1) ? ceil_log2(trie->n_ngrams[n]) : ceil_log2(trie->n_ngrams[0]);
+    if (n != 1 && n != trie->n)
+        dest[2] = ceil_log2(trie->n_ngrams[n]);
+}
+
+static void tmp_ngram_sizes(const struct trie *trie, int n, unsigned int *dest)
+{
+    dest[0] = 8 * sizeof(float);
+    dest[1] = (n == 1) ? ceil_log2(trie->n_ngrams[n]) : ceil_log2(trie->n_ngrams[0]);
+    if (n != 1)
+        dest[2] = (n == trie->n) ? ceil_log2(trie->n_ngrams[n-2]) : ceil_log2(trie->n_ngrams[n]);
 }

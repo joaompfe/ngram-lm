@@ -34,7 +34,7 @@
  * @param dest_offset
  * @param nbits
  */
-void mov(const void *src, uint8_t src_offset, void *dest, uint8_t dest_offset, int nbits);
+void mov(const void *src, uint8_t src_offset, void *dest, uint8_t dest_offset, unsigned int nbits);
 
 /**
  * Copies `nbits` from `src` to `dest`. The total bits are then shifted `dest_offset` bits over the memory page. The
@@ -44,8 +44,8 @@ void mov(const void *src, uint8_t src_offset, void *dest, uint8_t dest_offset, i
  * @param dest
  * @param dest_offset number of bits of offset
  */
-void mov_to(const void *src, int nbits, void *dest, uint8_t dest_offset);
+void mov_to(const void *src, unsigned int nbits, void *dest, uint8_t dest_offset);
 
-void mov_from(const void *src, uint8_t src_offset, void *dest, int nbits);
+void mov_from(const void *src, uint8_t src_offset, void *dest, unsigned int nbits);
 
 #endif //NGRAM_LM_BIT_H

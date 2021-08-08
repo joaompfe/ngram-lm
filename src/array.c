@@ -154,7 +154,7 @@ static int8_t binary_search(struct array *a, uint64_t l, uint64_t r, void *key,
         return binary_search(a, mid + 1, r, key, cmp, arg, index);
 }
 
-void elem_extract(const void *elem, void **dests, const int *sizes, int n)
+void elem_extract(const void *elem, void **dests, const unsigned int *sizes, unsigned int n)
 {
     uint8_t *src = (uint8_t *) elem;
     uint8_t offset = 0;
@@ -166,14 +166,14 @@ void elem_extract(const void *elem, void **dests, const int *sizes, int n)
     }
 }
 
-void array_get_extracted(const struct array *arr, uint64_t at, void **dest, const int *sizes, int n)
+void array_get_extracted(const struct array *arr, uint64_t at, void **dest, const unsigned int *sizes, unsigned int n)
 {
     uint8_t tmp[arr->elem_size / 8 + 1];
     array_get(arr, at, tmp);
     elem_extract(tmp, dest, sizes, n);
 }
 
-void elems_compact(void **elems, void *dest, const int *sizes, int n)
+void elems_compact(void **elems, void *dest, const unsigned int *sizes, unsigned int n)
 {
     uint8_t offset = 0;
     for (int i = 0; i < n; i++) {
@@ -183,7 +183,7 @@ void elems_compact(void **elems, void *dest, const int *sizes, int n)
     }
 }
 
-void array_set_compacted(const struct array *arr, uint64_t at, void **elems, const int *sizes, int n)
+void array_set_compacted(const struct array *arr, uint64_t at, void **elems, const unsigned int *sizes, unsigned int n)
 {
     uint8_t tmp[arr->elem_size / 8 + 1];
     elems_compact(elems, tmp, sizes, n);

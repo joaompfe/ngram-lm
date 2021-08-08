@@ -113,7 +113,7 @@ int8_t array_bsearch_r_within(void *key, struct array *arr, int64_t (*compare)(v
  * @param sizes array with the sizes of each memory space (in bits)
  * @param n number of memory spaces into which the data is split
  */
-void elem_extract(const void *elem, void **dests, const int *sizes, int n);
+void elem_extract(const void *elem, void **dests, const unsigned int *sizes, unsigned int n);
 
 /**
  * Splits the data from the `at`-th element of `arr` into `n` memory spaces pointed by the `dests` array, as done in
@@ -125,7 +125,7 @@ void elem_extract(const void *elem, void **dests, const int *sizes, int n);
  * @param sizes
  * @param n
  */
-void array_get_extracted(const struct array *arr, uint64_t at, void **dest, const int *sizes, int n);
+void array_get_extracted(const struct array *arr, uint64_t at, void **dest, const unsigned int *sizes, unsigned int n);
 
 /**
  * Compacts the elements pointed by `elems` (where the size of each element in bits is given by `sizes` array) into the
@@ -136,7 +136,7 @@ void array_get_extracted(const struct array *arr, uint64_t at, void **dest, cons
  * @param sizes
  * @param n number of elements to be compacted
  */
-void elems_compact(void **elems, void *dest, const int *sizes, int n);
+void elems_compact(void **elems, void *dest, const unsigned int *sizes, unsigned int n);
 
 /**
  * Compacts the elements pointed by `elems` as done in `elems_compact`, placing the result at the `at`-th element of
@@ -148,7 +148,7 @@ void elems_compact(void **elems, void *dest, const int *sizes, int n);
  * @param sizes
  * @param n
  */
-void array_set_compacted(const struct array *arr, uint64_t at, void **elems, const int *sizes, int n);
+void array_set_compacted(const struct array *arr, uint64_t at, void **elems, const unsigned int *sizes, unsigned int n);
 
 /**
  * Writes the array pointed by `arr` into file pointed by `out` in binary format.

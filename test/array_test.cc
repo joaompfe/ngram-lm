@@ -551,7 +551,7 @@ TEST(Array, ElemExtract)
 {
     uint64_t src = 869032957162;
     uint8_t a, b, c, d;
-    int split[] = {3, 5, 2, 8};
+    unsigned int split[] = {3, 5, 2, 8};
     void *dest[] = {&a, &b, &c, &d};
     elem_extract(&src, dest, split, 4);
     EXPECT_EQ(a, 2);
@@ -571,7 +571,7 @@ TEST(Array, ElemsCompact)
     struct tmp tmp = { 1020, 123, 132 };
     void *elems[] = { &tmp.a, &tmp.b, &tmp.c };
     uint32_t dest = 0;
-    const int sizes[] = { 10, 7, 9 };
+    const unsigned int sizes[] = { 10, 7, 9 };
     elems_compact(elems, &dest, sizes, 3);
     EXPECT_EQ(dest, 17428476);
 }
