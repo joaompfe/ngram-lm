@@ -120,12 +120,12 @@ size_t trie_fread(struct trie *t, FILE *f)
     return 1;
 }
 
-#define FOR_SECTION_LINE(sec, title, do) \
+#define FOR_EACH_SECTION_LINE(sec, title, do) \
 char *line = NULL;                       \
 size_t len = 0;                          \
 if (getline(&line, &len, sec) == -1) exit(EXIT_FAILURE); \
 if (strcmp(line, title) != 0) {          \
-    fprintf(stderr, "'%s' expected at the beginning of the ARPA file, but '%s' was found instead.\n", title, line); \
+    fprintf(stderr, "'%s' expected at the beginning of the section, but '%s' was found instead.\n", title, line); \
     exit(EXIT_FAILURE);                  \
 }                                        \
 uint64_t i = 0;                          \
@@ -144,8 +144,8 @@ fflush(stdout);                      \
 
 static void read_n_ngrams(const int order, FILE *header, uint64_t *n_ngrams)
 {
-    FOR_SECTION_LINE(header, "\\data\\\n",
-        if (i < order && sscanf(line, "ngram %*d=%lu", &n_ngrams[i]) == EOF)
+    FOR_EACH_SECTION_LINE(header, "\\data\\\n",
+                          if (i < order && sscanf(line, "ngram %*d=%lu", &n_ngrams[i]) == EOF)
             exit(EXIT_FAILURE);
     )
 }
@@ -154,8 +154,8 @@ static void create_vocab_lookup(const uint64_t n_unigrams, FILE *body, struct tr
 {
     trie->vocab_lookup = malloc(n_unigrams * sizeof(word_id_type));
     char word[WORD_MAX_LENGTH];
-    FOR_SECTION_LINE(body, "\\1-grams:\n",
-        double prob;
+    FOR_EACH_SECTION_LINE(body, "\\1-grams:\n",
+                          double prob;
         if (sscanf(line, "%lf%s%*f", &prob, word) == EOF)
             exit(EXIT_FAILURE);
 
@@ -189,8 +189,8 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
 
         char section_tile[24];
         snprintf(section_tile, 24, "\\%d-grams:\n", n);
-        FOR_SECTION_LINE(body, section_tile,
-            struct tmp_ngram tmp;
+        FOR_EACH_SECTION_LINE(body, section_tile,
+                              struct tmp_ngram tmp;
             tmp.context_id = 0;
             tmp.probability = 0;
             tmp.word_id = 0;
@@ -222,8 +222,8 @@ static void populate_unigrams(const int order, FILE *body, struct trie *trie)
         uint64_t index;
     };
     char word[WORD_MAX_LENGTH];
-    FOR_SECTION_LINE(body, "\\1-grams:\n",
-        float prob;
+    FOR_EACH_SECTION_LINE(body, "\\1-grams:\n",
+                          float prob;
         if (sscanf(line, "%f%s%*f", &prob, word) == EOF)
          exit(EXIT_FAILURE);
 
