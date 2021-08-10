@@ -30,8 +30,7 @@ static int cmp_vocab_words(const void *a, const void *b);
 static void populate_ngrams(int order, FILE *body, struct trie *trie);
 static void populate_unigrams(int order, FILE *body, struct trie *trie);
 static int64_t cmp_tmp_grams(void *a, void *b, void *arg);
-static void parse_ngram_definition(const char *line, int n, const struct trie * trie, float *prob,
-                                   uint64_t *context_id, word_id_type *word_id);
+static void parse_ngram_definition(const char *line, int n, const struct trie *trie, struct tmp_ngram *tmp_ngram);
 static void set_ngram(const struct trie *trie, int n, uint64_t at, struct ngram *ngram);
 static int64_t cmp_ngram(void *a, void *b, void *arg);
 static uint64_t get_context_id(const word_id_type *context_words_ids, int context_len, const struct trie *trie);
@@ -190,11 +189,11 @@ static void populate_ngrams(const int order, FILE *body, struct trie *trie)
         char section_tile[24];
         snprintf(section_tile, 24, "\\%d-grams:\n", n);
         FOR_EACH_SECTION_LINE(body, section_tile,
-                              struct tmp_ngram tmp;
+            struct tmp_ngram tmp;
             tmp.context_id = 0;
             tmp.probability = 0;
             tmp.word_id = 0;
-            parse_ngram_definition(line, n, trie, &tmp.probability, &tmp.context_id, &tmp.word_id);
+            parse_ngram_definition(line, n, trie, &tmp);
             set_tmp_ngram(trie, n, i, &tmp);
             PROGRESS_BAR("Reading ARPA", i, trie->n_ngrams[n-1])
         )
@@ -293,11 +292,10 @@ static int64_t cmp_tmp_grams(void *a, void *b, void *arg)
     }
 }
 
-static void parse_ngram_definition(const char *line, const int n, const struct trie * trie, float *prob,
-        uint64_t *context_id, word_id_type *word_id)
+static void parse_ngram_definition(const char *line, const int n, const struct trie *trie, struct tmp_ngram *tmp_ngram)
 {
     int nchar_matched;
-    if (sscanf(line, "%f%n", prob, &nchar_matched) == EOF)
+    if (sscanf(line, "%f%n", &tmp_ngram->probability, &nchar_matched) == EOF)
         exit(EXIT_FAILURE);
     line += nchar_matched;
 
@@ -310,8 +308,8 @@ static void parse_ngram_definition(const char *line, const int n, const struct t
 
         ids[i] = get_word_id(word, trie);
     }
-    *context_id = get_context_id(ids, n - 1, trie);
-    *word_id = ids[n - 1];
+    tmp_ngram->context_id = get_context_id(ids, n - 1, trie);
+    tmp_ngram->word_id = ids[n - 1];
 }
 
 word_id_type get_word_id(const char *word, const struct trie *trie)
