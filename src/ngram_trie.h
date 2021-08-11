@@ -11,12 +11,17 @@
 
 #include <stdint.h>
 
-typedef uint32_t word_id_type;  // TODD: dynamically adaptable
+typedef uint32_t word_id_type;
+
+struct vocab_entry {
+    word_id_type id;
+    char *word;
+};
 
 struct trie {
     unsigned short n;  // (max)-gram. equal to the trie depth
     uint64_t *n_ngrams;
-    word_id_type *vocab_lookup;  // the values are 32-bit word hashes and indexes are the word identifiers
+    struct vocab_entry *vocab_lookup;
     struct array **ngrams;
     uint8_t word_id_size;
 };

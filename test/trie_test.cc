@@ -22,7 +22,7 @@ TEST(Trie, VocabLookupArray)
 {
     struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
     for (int i = 1; i < trie->n_ngrams[0]; i++) {
-        EXPECT_TRUE(trie->vocab_lookup[i-1] < trie->vocab_lookup[i]);
+        EXPECT_TRUE(trie->vocab_lookup[i-1].id < trie->vocab_lookup[i].id);
     }
 }
 

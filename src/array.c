@@ -205,6 +205,7 @@ size_t array_fread(struct array *arr, FILE *in)
         return read;
     }
     size_t n = arr->elem_size * arr->len / 8 + 1;
+    arr->elems = malloc((unsigned long) ceil((double) (arr->elem_size * arr->len) / 8.0) + 8);
     read = fread(arr->elems, sizeof(uint8_t), n, in);
     if (read != n) {
         fprintf(stderr, "Error while reading array->elems_size.\n");

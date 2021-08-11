@@ -26,7 +26,7 @@ struct tmp_ngram {
 
 static void read_n_ngrams(int order, FILE* header, uint64_t *n_ngrams);
 static void create_vocab_lookup(uint64_t n_unigrams, FILE *body, struct trie *trie);
-static int cmp_vocab_words(const void *a, const void *b);
+static int cmp_vocab_entries(const void *a, const void *b);
 static void populate_ngrams(int order, FILE *body, struct trie *trie);
 static void populate_unigrams(int order, FILE *body, struct trie *trie);
 static int64_t cmp_tmp_grams(void *a, void *b, void *arg);
@@ -86,7 +86,13 @@ void trie_fwrite(const struct trie *t, FILE *f)
 {
     fwrite(t, sizeof(struct trie), 1, f);
     fwrite(t->n_ngrams, sizeof(uint64_t), t->n, f);
-    fwrite(t->vocab_lookup, sizeof(word_id_type), t->n_ngrams[0], f);
+    fwrite(t->vocab_lookup, sizeof(struct vocab_entry), t->n_ngrams[0], f);
+    for (int i = 0; i < t->n_ngrams[0]; i++) {
+        char *word = t->vocab_lookup[i].word;
+        unsigned int len = strlen(word);
+        fwrite(&len, sizeof(unsigned int), 1, f);
+        fwrite(word, sizeof(char), len, f);
+    }
     for (int i = 0; i < t->n; i++) {
         array_fwrite(t->ngrams[i], f);
     }
@@ -99,17 +105,28 @@ size_t trie_fread(struct trie *t, FILE *f)
         fprintf(stderr, "Error while reading struct trie from file.\n");
         return read;
     }
+    t->n_ngrams = malloc(t->n * sizeof(uint64_t));
     read = fread(t->n_ngrams, sizeof(uint64_t), t->n, f);
     if (read != t->n) {
         fprintf(stderr, "Error while reading trie->n_ngrams from file.\n");
         return read;
     }
-    read = fread(t->vocab_lookup, sizeof(word_id_type), t->n_ngrams[0], f);
+    t->vocab_lookup = malloc(t->n_ngrams[0] * sizeof(struct vocab_entry));
+    read = fread(t->vocab_lookup, sizeof(struct vocab_entry), t->n_ngrams[0], f);
+    for (int i = 0; i < t->n_ngrams[0]; i++) {
+        unsigned int len;
+        fread(&len, sizeof(unsigned int), 1, f);
+        char *word = malloc((len + 1) * sizeof(char));
+        fread(word,  sizeof(char), len, f);
+        word[len] = '\0';
+        t->vocab_lookup[i].word = word;
+    }
     if (read != t->n_ngrams[0]) {
         fprintf(stderr, "Error while reading vocabulary lookup from file.\n");
         return read;
     }
     for (int i = 0; i < t->n; i++) {
+        t->ngrams[i] = malloc(t->n_ngrams[i] * ngram_size(t, i + 1));
         read = array_fread(t->ngrams[i], f);
         if (read != 1) {
             fprintf(stderr, "Error while reading trie->ngrams[%d] from file.\n", i);
@@ -151,29 +168,29 @@ static void read_n_ngrams(const int order, FILE *header, uint64_t *n_ngrams)
 
 static void create_vocab_lookup(const uint64_t n_unigrams, FILE *body, struct trie *trie)
 {
-    trie->vocab_lookup = malloc(n_unigrams * sizeof(word_id_type));
+    trie->vocab_lookup = malloc(n_unigrams * sizeof(struct vocab_entry));
     char word[WORD_MAX_LENGTH];
     FOR_EACH_SECTION_LINE(body, "\\1-grams:\n",
-                          double prob;
+        double prob;
         if (sscanf(line, "%lf%s%*f", &prob, word) == EOF)
             exit(EXIT_FAILURE);
-
         if (strlen(word) > KNOWN_PORTUGUESE_WORD_MAX_LENGTH) {
             fprintf(stderr, "a word with %lu characters was found at the %lu-th line of the 1-grams section.\n",
                     strlen(word), i+1);
         }
-
         word_id_type hash = qhashmurmur3_32(word, strlen(word));
-        trie->vocab_lookup[i] = hash;
+        trie->vocab_lookup[i].id = hash;
+        trie->vocab_lookup[i].word = malloc((strlen(word) + 1) * sizeof(char));
+        strcpy(trie->vocab_lookup[i].word, word);
     )
-    qsort(trie->vocab_lookup, n_unigrams, sizeof(word_id_type), cmp_vocab_words);
+    qsort(trie->vocab_lookup, n_unigrams, sizeof(struct vocab_entry), cmp_vocab_entries);
 }
 
-static int cmp_vocab_words(const void *a, const void *b)
+static int cmp_vocab_entries(const void *a, const void *b)
 {
-    word_id_type id_a = *(word_id_type *)a, id_b = *(word_id_type *)b;
-    if (id_a < id_b) return -1;
-    else if (id_a > id_b) return 1;
+    struct vocab_entry *a_entry = (struct vocab_entry *)a, *b_entry = (struct vocab_entry *)b;
+    if (a_entry->id < b_entry->id) return -1;
+    else if (a_entry->id > b_entry->id) return 1;
     else return 0;
 }
 
@@ -315,9 +332,10 @@ static void parse_ngram_definition(const char *line, const int n, const struct t
 word_id_type get_word_id(const char *word, const struct trie *trie)
 {
     word_id_type hash = qhashmurmur3_32(word, strlen(word));
-    void *idx = bsearch(&hash, trie->vocab_lookup, trie->n_ngrams[0],
-                        sizeof(word_id_type), cmp_vocab_words);
-    word_id_type id = (idx - (void *) trie->vocab_lookup) / sizeof(word_id_type);
+    struct vocab_entry key = { hash, word };
+    void *idx = bsearch(&key, trie->vocab_lookup, trie->n_ngrams[0],
+                        sizeof(struct vocab_entry), cmp_vocab_entries);
+    word_id_type id = (idx - (void *) trie->vocab_lookup) / sizeof(struct vocab_entry);
     if (id > trie->n_ngrams[0]) {
         fprintf(stderr, "'%s' word is not listed in the vocabulary lookup", word);
         exit(EXIT_FAILURE);
