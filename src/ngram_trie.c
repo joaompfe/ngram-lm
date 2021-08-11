@@ -498,3 +498,8 @@ static void tmp_ngram_sizes(const struct trie *trie, int n, unsigned int *dest)
     if (n != 1)
         dest[2] = (n == trie->n) ? ceil_log2(trie->n_ngrams[n-2]) : ceil_log2(trie->n_ngrams[n]);
 }
+
+char *get_word(const struct trie *trie, word_id_type id, char *dest, size_t n)
+{
+    return strncpy(dest, trie->vocab_lookup[id].word, n);
+}

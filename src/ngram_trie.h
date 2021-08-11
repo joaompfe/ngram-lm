@@ -39,5 +39,6 @@ struct ngram get_ngram(const struct trie *trie, int n, uint64_t at);
 struct ngram query(const struct trie *trie, char const **words, int n);
 void trie_fwrite(const struct trie *t, FILE *f);
 size_t trie_fread(struct trie *t, FILE *f);
+char *get_word(const struct trie *trie, word_id_type id, char *dest, size_t n);
 
 #endif //NGRAM_LM_NGRAM_TRIE_H

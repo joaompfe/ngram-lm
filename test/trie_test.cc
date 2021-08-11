@@ -131,3 +131,12 @@ TEST(Trie, LoadAndSaveFromFile)
     EXPECT_EQ(ngram.word_id, get_word_id("português", &trie));
     std::remove(out_path);
 }
+
+TEST(Trie, GetWord)
+{
+    struct trie *trie = new_trie_from_arpa("./data/tmp.arpa", 3);
+    char word[48];
+    EXPECT_STREQ("negócio", get_word(trie, 0, word, 48));
+    EXPECT_STREQ("esses", get_word(trie, 1, word, 48));
+    EXPECT_STREQ("economia", get_word(trie, 200, word, 48));
+}
