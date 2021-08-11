@@ -68,6 +68,7 @@ int main (int argc, char **argv)
 
     printf ("Building the %d-gram trie...", arguments.order);
     build_trie_from_arpa(arguments.file, arguments.order, arguments.out);
+    printf("Language model successfully build");
 
     exit(0);
 }

@@ -317,7 +317,12 @@ word_id_type get_word_id(const char *word, const struct trie *trie)
     word_id_type hash = qhashmurmur3_32(word, strlen(word));
     void *idx = bsearch(&hash, trie->vocab_lookup, trie->n_ngrams[0],
                         sizeof(word_id_type), cmp_vocab_words);
-    return (idx - (void *) trie->vocab_lookup) / sizeof(word_id_type);
+    word_id_type id = (idx - (void *) trie->vocab_lookup) / sizeof(word_id_type);
+    if (id > trie->n_ngrams[0]) {
+        fprintf(stderr, "'%s' word is not listed in the vocabulary lookup", word);
+        exit(EXIT_FAILURE);
+    }
+    return id;
 }
 
 struct ngram get_ngram(const struct trie *trie, const int n, uint64_t at)
@@ -330,7 +335,6 @@ struct ngram get_ngram(const struct trie *trie, const int n, uint64_t at)
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 2);
     } else if (n < trie->n) {
         void *dest[] = { &ngram.probability, &ngram.word_id, &ngram.index };
-
         array_get_extracted(trie->ngrams[n-1], at, dest, sizes, 3);
     } else {
         void *dest[] = { &ngram.probability, &ngram.word_id };
@@ -409,7 +413,7 @@ static uint64_t get_context_id(const word_id_type *context_words_ids, const int 
         struct ngram adjacent_ngram = get_ngram(trie, i, index + 1);
         uint64_t left_index = ngram.index;
         uint64_t right_index = adjacent_ngram.index;
-        unsigned sizes[3];
+        unsigned int sizes[3];
         ngram_sizes(trie, i+1, sizes);
         struct ngram key = {0, context_words_ids[i], 0};
         if (array_bsearch_r_within(&key, trie->ngrams[i], cmp_ngram, (void *) sizes,
@@ -430,7 +434,7 @@ struct ngram query(const struct trie *trie, char const **words, const int n)
         struct ngram adjacent_ngram = get_ngram(trie, i, index + 1);
         uint64_t left_index = ngram.index;
         uint64_t right_index = adjacent_ngram.index;
-        unsigned sizes[3];
+        unsigned int sizes[3];
         ngram_sizes(trie, i+1, sizes);
         struct ngram key = { 0, get_word_id(words[i], trie), 0};
         if (array_bsearch_r_within(&key, trie->ngrams[i], cmp_ngram, (void *) sizes,
