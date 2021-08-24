@@ -1,7 +1,7 @@
 // Copyright (c) 2021, João Fé, All rights reserved.
 
 extern "C" {
-#include "array.h"
+#include "c/array.h"
 }
 
 #include <gtest/gtest.h>
@@ -11,37 +11,22 @@ TEST(Array, NewArray)
     int elem_size_bits = 4;
     int length = 3;
     int extra_allocated = 8;
-    struct array *a = new_array(elem_size_bits, length);
+    struct array *a = array_new(elem_size_bits, length);
 
     EXPECT_EQ(a->len, length);
     EXPECT_EQ(a->elem_size, elem_size_bits);
     EXPECT_TRUE(a->elems != nullptr);
 
-    int size = (elem_size_bits * length - 1) / 8 + 1 + extra_allocated;
-    uint8_t value, *p = a->elems;
-    int i = 0;
-    for (; i < size; i++) {
-        value = *p++;
-    }
-
-    ASSERT_EXIT(
-            {
-                for (; i < 10e6; i++)
-                    value = *p++;
-            },
-            ::testing::KilledBySignal(SIGSEGV),
-            ".*");
-
-    delete_array(a);
+    array_delete(a);
 }
 
 TEST(Array, SetAndGet)
 {
     int elem_size_bits = 1;
     int length = 3;
-    struct array *a = new_array(elem_size_bits, length);
+    struct array *a = array_new(elem_size_bits, length);
 
-    uint8_t elems[] = {1, 1, 1, 0};
+    uint8_t elems[] = { 1, 1, 1, 0 };
     uint8_t value;
     array_set(a, 0, &elems[0]);
     array_set(a, 1, &elems[1]);
@@ -98,12 +83,11 @@ TEST(Array, SetAndGet)
     array_get(a, 2, &value);
     EXPECT_EQ(value, 0);
 
-    delete_array(a);
-
+    array_delete(a);
 
     elem_size_bits = 3;
     length = 4;
-    a = new_array(elem_size_bits, length);
+    a = array_new(elem_size_bits, length);
     value = 0;
     array_set(a, 0, &value);
     array_set(a, 1, &value);
@@ -146,11 +130,10 @@ TEST(Array, SetAndGet)
     array_get(a, 3, &value);
     EXPECT_EQ(value, 1);
 
-    delete_array(a);
-
+    array_delete(a);
 
     elem_size_bits = 8;
-    a = new_array(elem_size_bits, length);
+    a = array_new(elem_size_bits, length);
     value = 1;
     array_set(a, 0, &value);
     array_set(a, 1, &value);
@@ -201,12 +184,11 @@ TEST(Array, SetAndGet)
     array_get(a, 3, &value);
     EXPECT_EQ(value, 255);
 
-    delete_array(a);
-
+    array_delete(a);
 
     elem_size_bits = 11;
     uint16_t value11;
-    a = new_array(elem_size_bits, length);
+    a = array_new(elem_size_bits, length);
 
     value11 = 0;
     array_set(a, 0, &value11);
@@ -252,12 +234,11 @@ TEST(Array, SetAndGet)
     array_get(a, 3, &value11);
     EXPECT_EQ(value11, 2);
 
-    delete_array(a);
-
+    array_delete(a);
 
     elem_size_bits = 24;
     uint32_t value32;
-    a = new_array(elem_size_bits, length);
+    a = array_new(elem_size_bits, length);
 
     value32 = 255;
     array_set(a, 0, &value32);
@@ -286,11 +267,10 @@ TEST(Array, SetAndGet)
     array_get(a, 3, &value32);
     EXPECT_EQ(value32, 255);
 
-    delete_array(a);
-
+    array_delete(a);
 
     elem_size_bits = 31;
-    a = new_array(elem_size_bits, length);
+    a = array_new(elem_size_bits, length);
 
     value32 = 1;
     array_set(a, 0, &value32);
@@ -336,15 +316,15 @@ TEST(Array, GetAndSetLessThan8Bits)
 {
     uint8_t elem_size = 4;
     uint64_t length = 10;
-    uint8_t elements[] = {1, 0 , 3, 3, 5, 3, 0, 2, 1, 2};
+    uint8_t elements[] = { 1, 0, 3, 3, 5, 3, 0, 2, 1, 2 };
 
-    struct array *arr = new_array(elem_size, length);
+    struct array *arr = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(arr, i, &elements[i]);
     for (int i = 0; i < length; i++) {
         uint8_t value;
         array_get(arr, i, &value);
-        EXPECT_EQ(value,elements[i]);
+        EXPECT_EQ(value, elements[i]);
     }
 
     elements[3] = 1;
@@ -356,7 +336,7 @@ TEST(Array, GetAndSetLessThan8Bits)
     for (int i = 0; i < length; i++) {
         uint8_t value = 0;
         array_get(arr, i, &value);
-        EXPECT_EQ(value,elements[i]);
+        EXPECT_EQ(value, elements[i]);
     }
 }
 
@@ -364,15 +344,15 @@ TEST(Array, GetAndSet32Bits)
 {
     uint8_t elem_size = 32;
     uint64_t length = 10;
-    uint64_t elements[] = {1, 0 , 333333, 3, 5, 3, 0, 2, 1, 2};
+    uint64_t elements[] = { 1, 0, 333333, 3, 5, 3, 0, 2, 1, 2 };
 
-    struct array *arr = new_array(elem_size, length);
+    struct array *arr = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(arr, i, (void *) &elements[i]);
     for (int i = 0; i < length; i++) {
         uint32_t value;
         array_get(arr, i, &value);
-        EXPECT_EQ(value,elements[i]);
+        EXPECT_EQ(value, elements[i]);
     }
 }
 
@@ -380,15 +360,15 @@ TEST(Array, GetAndSet64Bits)
 {
     uint8_t elem_size = 64;
     uint64_t length = 10;
-    uint64_t elements[] = {1, 0 , 333333, 31232132, 5, 3, 0, 2, 1, 2};
+    uint64_t elements[] = { 1, 0, 333333, 31232132, 5, 3, 0, 2, 1, 2 };
 
-    struct array *arr = new_array(elem_size, length);
+    struct array *arr = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(arr, i, (void *) &elements[i]);
     for (int i = 0; i < length; i++) {
         uint64_t value;
         array_get(arr, i, &value);
-        EXPECT_EQ(value,elements[i]);
+        EXPECT_EQ(value, elements[i]);
     }
 
     elements[3] = 1;
@@ -400,33 +380,33 @@ TEST(Array, GetAndSet64Bits)
     for (int i = 0; i < 10; i++) {
         uint64_t value;
         array_get(arr, i, &value);
-        EXPECT_EQ(value,elements[i]);
+        EXPECT_EQ(value, elements[i]);
     }
 }
 
 struct mock {
     uint32_t a;
-    unsigned int b : 3;
-    unsigned int c : 3;
+    unsigned int b: 3;
+    unsigned int c: 3;
 };
 
 TEST(Array, GetAndSetMoreThan64Bits)
 {
     uint8_t elem_size = 32 + 6; // sizeof(struct mock) * 8;
     uint64_t length = 3;
-    struct mock elements[] = {{1, 2, 3} ,
-                       {123467, 0, 4},
-                       {7654321, 1, 3}};
+    struct mock elements[] = {{ 1,       2, 3 },
+                              { 123467,  0, 4 },
+                              { 7654321, 1, 3 }};
 
-    struct array *arr = new_array(elem_size, length);
+    struct array *arr = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(arr, i, (void *) &elements[i]);
     for (int i = 0; i < length; i++) {
         struct mock value;
         array_get(arr, i, &value);
-        EXPECT_EQ(value.a,elements[i].a);
-        EXPECT_EQ(value.b,elements[i].b);
-        EXPECT_EQ(value.c,elements[i].c);
+        EXPECT_EQ(value.a, elements[i].a);
+        EXPECT_EQ(value.b, elements[i].b);
+        EXPECT_EQ(value.c, elements[i].c);
     }
 
     elements[0].b = 5;
@@ -436,39 +416,39 @@ TEST(Array, GetAndSetMoreThan64Bits)
     for (int i = 0; i < length; i++) {
         struct mock value;
         array_get(arr, i, &value);
-        EXPECT_EQ(value.a,elements[i].a);
-        EXPECT_EQ(value.b,elements[i].b);
-        EXPECT_EQ(value.c,elements[i].c);
+        EXPECT_EQ(value.a, elements[i].a);
+        EXPECT_EQ(value.b, elements[i].b);
+        EXPECT_EQ(value.c, elements[i].c);
     }
 }
 
-int64_t uint8_compare(void *a, void *b)
+int uint8_compare(void *a, void *b)
 {
-    return (int64_t) (*((uint8_t *) a) - *((uint8_t *) b));
+    return (*((uint8_t *) a) - *((uint8_t *) b));
 }
 
-int64_t uint16_compare(void *a, void *b)
+int uint16_compare(void *a, void *b)
 {
-    return (int64_t) (*((uint16_t *) a) - *((uint16_t *) b));
+    return (*((uint16_t *) a) - *((uint16_t *) b));
 }
 
-int64_t uint16_compare_arg(void *a, void *b, void *arg)
+int uint16_compare_arg(void *a, void *b, void *arg)
 {
-    uint16_t n = * (uint16_t *) arg;
+    uint16_t n = *(uint16_t *) arg;
     if (*((uint16_t *) a) % n == 0 && *((uint16_t *) b) % n != 0)
         return -1;
     if (*((uint16_t *) a) % n != 0 && *((uint16_t *) b) % n == 0)
         return 1;
-    return (int64_t) (*((uint16_t *) a) - *((uint16_t *) b));
+    return (*((uint16_t *) a) - *((uint16_t *) b));
 }
 
 TEST(Array, Sort)
 {
     uint8_t elem_size = 3;
     uint64_t length = 10;
-    uint8_t elements[] = {1, 0 , 3, 3, 5, 6, 0, 4, 1, 2};
+    uint8_t elements[] = { 1, 0, 3, 3, 5, 6, 0, 4, 1, 2 };
 
-    struct array *a = new_array(elem_size, length);
+    struct array *a = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(a, i, &elements[i]);
     array_sort(a, uint8_compare);
@@ -479,12 +459,12 @@ TEST(Array, Sort)
         EXPECT_TRUE(prev <= current);
     }
 
-    delete_array(a);
+    array_delete(a);
 
     elem_size = 13;
     length = 7;
-    uint16_t elems16[] = {1024, 2048, 0, 0, 1024, 1023, 1};
-    a = new_array(elem_size, length);
+    uint16_t elems16[] = { 1024, 2048, 0, 0, 1024, 1023, 1 };
+    a = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(a, i, &elems16[i]);
 
@@ -508,7 +488,7 @@ TEST(Array, Sort)
 
     uint16_t base = 2;
     array_sort_r(a, uint16_compare_arg, &base);
-    
+
     array_get(a, 0, &value16);
     EXPECT_EQ(value16, 0);
     array_get(a, 1, &value16);
@@ -529,9 +509,9 @@ TEST(Array, BinarySearch)
 {
     uint8_t elem_size = 3;
     uint64_t length = 10;
-    uint8_t elements[] = {1, 0 , 3, 3, 5, 6, 0, 4, 1, 2};
+    uint8_t elements[] = { 1, 0, 3, 3, 5, 6, 0, 4, 1, 2 };
 
-    struct array *arr = new_array(elem_size, length);
+    struct array *arr = array_new(elem_size, length);
     for (int i = 0; i < length; i++)
         array_set(arr, i, &elements[i]);
     array_sort(arr, uint8_compare);
@@ -551,8 +531,8 @@ TEST(Array, ElemExtract)
 {
     uint64_t src = 869032957162;
     uint8_t a, b, c, d;
-    unsigned int split[] = {3, 5, 2, 8};
-    void *dest[] = {&a, &b, &c, &d};
+    unsigned int split[] = { 3, 5, 2, 8 };
+    void *dest[] = { &a, &b, &c, &d };
     elem_extract(&src, dest, split, 4);
     EXPECT_EQ(a, 2);
     EXPECT_EQ(b, 29);

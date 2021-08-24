@@ -1,7 +1,7 @@
 // Copyright (c) 2021, João Fé, All rights reserved.
 
 extern "C" {
-#include "bit.h"
+#include "c/bit.h"
 }
 
 #include <gtest/gtest.h>
