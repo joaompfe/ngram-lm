@@ -543,6 +543,7 @@ map_trie_path(const struct trie *t, const word_id_type *word_ids,
     unsigned short n = 1;
     uint64_t index = word_ids[0];
     struct array_record ar = get_array_record(t, 1, index);
+    ar.word_id = index;
     f(&ar, index, 1, arg);
     for (; n < path_len; n++) {
         struct array_record adjacent_ar = get_array_record(t, n, index + 1);
@@ -589,11 +590,10 @@ static void trie_query_ngram_f(struct array_record *ar, uint64_t ar_index,
     void **args = arg;
     struct trie *t = args[0];
     struct ngram **ngrams = args[1];
-    struct ngram *ngram = ngram_new_empty_unigram();
+    struct ngram *ngram = ngrams[trie_level - 1];
     ngram->probability = ar->probability;
     ngram->backoff = -1.0f;
     ngram->word = &t->vocab_lookup[ar->word_id];
-    ngrams[trie_level - 1] = ngram;
 }
 
 struct ngram *trie_query_ngram(const struct trie *t, char const **words, int *n)
@@ -603,11 +603,24 @@ struct ngram *trie_query_ngram(const struct trie *t, char const **words, int *n)
         ids[i] = trie_get_word_id_from_text(t, words[i]);
     }
     struct ngram *ngrams[*n];
+    for (int i = 0; i < *n; i++) {
+        ngrams[i] = ngram_new_empty_unigram();
+        if (i > 0)
+            ngrams[i]->context = ngrams[i - 1];
+    }
     void *args[] = { (void *) t, (void *) ngrams };
-    *n = map_trie_path(t, ids, *n, trie_query_ngram_f, args);
-    for (int i = 1; i < *n; i++)
-        ngrams[i]->context = ngrams[i - 1];
-    return ngrams[*n - 1];
+    int ids_start = 0;
+    while (map_trie_path(t, &ids[ids_start], *n, trie_query_ngram_f, args) <
+           *n) {
+        ids_start++;
+        args[1] = &ngrams[ids_start];
+        *n = *n - 1;
+    }
+
+    for (int i = 0; i < ids_start; i++)
+        ngram_delete(ngrams[i]);
+    ngrams[ids_start]->context = NULL;
+    return ngrams[ids_start + *n - 1];
 }
 
 static unsigned long get_array_record_size(const struct trie *t, int n)
@@ -687,10 +700,10 @@ struct word *trie_get_nwp(const struct trie *t, const char **words, int n)
     int is_nwp_for_sentence_start = n == 0;
     uint64_t index;
     word_id_type ids[n];
+    int ids_start = 0;
 
     if (!is_nwp_for_sentence_start) {
         trie_get_word_ids(t, words, n, ids);
-        int ids_start = 0;
         for (int i = 0; i < n; i++)
             if (is_unknown_wid(t, ids[i]))
                 ids_start = i + 1;
@@ -699,7 +712,11 @@ struct word *trie_get_nwp(const struct trie *t, const char **words, int n)
     }
 
     if (!is_nwp_for_sentence_start)
-        map_trie_path(t, ids, n, trie_get_nwp_f, &index);
+        while (map_trie_path(t, &ids[ids_start], n, trie_get_nwp_f, &index) <
+               n) {
+            ids_start++;
+            n--;
+        }
     else {
         index = trie_get_word_id_from_text(t, "<s>");
         n = 1;
@@ -716,4 +733,14 @@ struct word *trie_get_nwp(const struct trie *t, const char **words, int n)
             nwp_record = tmp_nwp_record;
     }
     return &t->vocab_lookup[nwp_record.word_id];
+}
+
+float trie_ngram_probability(const struct trie *t, const char **words, int n)
+{
+    int tmp_n = n;
+    struct ngram *ngram = trie_query_ngram(t, words, &tmp_n);
+    if (tmp_n == n)
+        return ngram->probability;
+    else
+        return ngram->probability + ngram->backoff;
 }

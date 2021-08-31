@@ -46,6 +46,15 @@ TEST(Trie, QueryNgram)
     n = 3;
     ngram = trie_query_ngram(trie, (char const **) grams, &n);
     EXPECT_STREQ(ngram->word->text, "circulação");
+    EXPECT_TRUE(ngram->context != nullptr);
+    EXPECT_TRUE(ngram->context->context != nullptr);
+
+    grams[0] = "havia";
+    grams[1] = "é";
+    n = 2;
+    ngram = trie_query_ngram(trie, (char const **) grams, &n);
+    EXPECT_STREQ(ngram->word->text, "é");
+    EXPECT_TRUE(ngram->context == nullptr);
 }
 
 TEST(Trie, LoadAndSaveFromFile)
@@ -124,6 +133,11 @@ TEST(Trie, GetNwp)
     words[1] = "giaonewnfwpofnjANOFawdWAQ";
     nwp = trie_get_nwp(t, words, 2);
     ASSERT_STREQ(nwp->text, "Para");
+
+    words[0] = "havia";
+    words[1] = "é";
+    nwp = trie_get_nwp(t, words, 2);
+    ASSERT_STREQ(nwp->text, "que");
 }
 
 TEST(Trie, LoadAndSave)
@@ -146,4 +160,20 @@ TEST(Trie, LoadAndSave)
     EXPECT_EQ(t->n_ngrams[0], 209);
     EXPECT_EQ(t->n_ngrams[1], 323);
     EXPECT_EQ(t->n_ngrams[2], 325);
+}
+
+TEST(Trie, NgramProbability)
+{
+    struct trie *t = trie_new_from_arpa(3, arpa_open("./data/tmp.arpa"));
+    char const *words[10];
+    words[0] = "qualquer";
+    words[1] = "ligação";
+    float prob = trie_ngram_probability(t, words, 2);
+    EXPECT_EQ(prob, -0.5990452f);
+
+    words[0] = "uma";
+    words[1] = "maior";
+    words[2] = "aprofundamento";
+    prob = trie_ngram_probability(t, words, 3);
+    EXPECT_EQ(prob, -0.29952f - 0.30103f);
 }
