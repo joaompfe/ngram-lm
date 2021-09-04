@@ -1,3 +1,5 @@
+## Docs
+
 ### Installation
 The library is available on the PyPI and can be installed with the command `pip install ngram-lm`.
 
