@@ -1,4 +1,4 @@
-# n-gram LM for next word prediction
+# *n*-gram Language Model for Next Word Prediction
 
 See the C's [README](src/c/README.md).
 
