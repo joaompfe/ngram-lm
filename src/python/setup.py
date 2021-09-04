@@ -2,6 +2,9 @@ import os
 
 from Cython.Build import cythonize
 from setuptools import Extension, setup
+from pathlib import Path
+
+long_description = (Path(__file__).parent / "README.md").read_text()
 
 project_dir = os.environ["NGRAM_LM_DIR"]
 
@@ -19,7 +22,9 @@ extensions = [Extension(name, [sources],
 ext_modules = cythonize(extensions,
                         language_level="3")
 setup(name="ngram-lm",
-      version="0.0.2",
+      version="0.0.6",
       author="João Fé",
       author_email="joaofe2000@gmail.com",
-      ext_modules=ext_modules)
+      ext_modules=ext_modules,
+      long_description=long_description,
+      long_description_content_type='text/markdown')
