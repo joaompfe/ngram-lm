@@ -15,3 +15,4 @@ cdef extern from "trie.h":
     int trie_load(const char *path, trie **t)
     word_id_type trie_get_word_id(const trie *t, const char *word_text)
     word *trie_get_nwp(const trie *t, const char **words, int n)
+    void trie_get_k_nwp(const trie *t, const char **words, int n, unsigned short k, word **predictions)

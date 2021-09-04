@@ -1,4 +1,5 @@
 cimport trie as ctrie
+cimport word as cword
 
 from libc.stdlib cimport malloc, free
 from libc.string cimport strcpy
@@ -37,17 +38,22 @@ cdef class Trie:
     def get_word_id(self, word: str):
         return ctrie.trie_get_word_id_from_text(self._c_trie, word.encode())
 
-    def next_word_prediction(self, words: [str]):
+    def next_word_predictions(self, words: [str], k: int = 1):
         n = len(words)
-        cdef char **c_words = <char **> malloc(n * sizeof(char *))
+        cdef char **context = <char **> malloc(n * sizeof(char *))
+        cdef cword.word **cpreds = <cword.word **> malloc(k * sizeof(cword.word *))
+        n = len(words)
+        byte_str = [w.encode() for w in words]
         for i in range(n):
-            c_words[i] = <char *> malloc(len(words[i]) * sizeof(char))
-            strcpy(c_words[i], words[i].encode())
-        word = Word.create(<object> ctrie.trie_get_nwp(self._c_trie, <const char **> c_words, n))
-        for i in range(n):
-            free(<void *> c_words[i])
-        free(<void *> c_words)
-        return word
+            context[i] = byte_str[i]
+        ctrie.trie_get_k_nwp(self._c_trie, <const char **> context, n, k, cpreds)
+        preds = list()
+        for i in range(k):
+            if cpreds[i] is not NULL:
+                preds.append(Word.create(<object> cpreds[i]))
+        free(<void *> context)
+        free(<void *> cpreds)
+        return preds
 
 
 def build(order: int, arpa_path: str, out_path: str):

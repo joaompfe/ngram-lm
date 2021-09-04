@@ -132,6 +132,17 @@ trie_word_textncpy(const struct trie *t, word_id_type id, char *dest, size_t n);
 struct word *trie_get_nwp(const struct trie *t, const char **words, int n);
 
 /**
+ * Get top \p k next predictions predictions given the \p n-length context given by \p
+ * words.
+ * @param t
+ * @param words prediction context, of length \p n.
+ * @param n the length of context \p words.
+ * @return next predictions prediction.
+ */
+void trie_get_k_nwp(const struct trie *t, const char **words, int n,
+                    unsigned short k, struct word **predictions);
+
+/**
  * Give the smoothed probability of the \p n -gram given by \p words.
  * @param words
  * @param n

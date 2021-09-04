@@ -140,6 +140,25 @@ TEST(Trie, GetNwp)
     ASSERT_STREQ(nwp->text, "que");
 }
 
+TEST(Trie, GetKNwp)
+{
+    struct trie *t = trie_new_from_arpa(3, arpa_open("./data/tmp.arpa"));
+    const char *words[] = { "é", "que" };
+    struct word *word_preds[10];
+    int k = 10;
+    trie_get_k_nwp(t, words, 2, k, word_preds);
+    ASSERT_STREQ(word_preds[0]->text, "os");
+    ASSERT_STREQ(word_preds[1]->text, "levaram");
+    ASSERT_STREQ(word_preds[2]->text, "já");
+    ASSERT_STREQ(word_preds[3]->text, "avançaram");
+    ASSERT_STREQ(word_preds[4]->text, "Público");
+    ASSERT_STREQ(word_preds[5]->text, "dentro");
+    ASSERT_STREQ(word_preds[6]->text, "lhes");
+    ASSERT_STREQ(word_preds[7]->text, "reforça");
+    ASSERT_STREQ(word_preds[8]->text, "Na");
+    ASSERT_STREQ(word_preds[9]->text, "Em");
+}
+
 TEST(Trie, LoadAndSave)
 {
     const char *arpa_path = "./data/tmp.arpa";

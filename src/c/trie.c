@@ -475,6 +475,7 @@ get_array_record(const struct trie *t, int n, uint64_t at)
     if (n == 1) {
         void *dest[] = { &ngram.probability, &ngram.first_child_index };
         array_get_extracted(t->arrays[n - 1], at, dest, sizes, 2);
+        ngram.word_id = at;
     } else if (n < t->order) {
         void *dest[] = { &ngram.probability, &ngram.word_id,
                          &ngram.first_child_index };
@@ -697,6 +698,7 @@ static void trie_get_nwp_f(struct array_record *ar, uint64_t ar_index,
 
 struct word *trie_get_nwp(const struct trie *t, const char **words, int n)
 {
+    // TODO use trie_get_k_nwp
     int is_nwp_for_sentence_start = n == 0;
     uint64_t index;
     word_id_type ids[n];
@@ -726,13 +728,109 @@ struct word *trie_get_nwp(const struct trie *t, const char **words, int n)
     struct array_record adjacent_ar = get_array_record(t, n, index + 1);
     uint64_t left = ar.first_child_index;
     uint64_t right = adjacent_ar.first_child_index;
-    struct array_record nwp_record = get_array_record(t, n + 1, left);;
+    struct array_record nwp_record = get_array_record(t, n + 1, left);
     for (uint64_t i = left + 1; i < right; i++) {
         struct array_record tmp_nwp_record = get_array_record(t, n + 1, i);
         if (tmp_nwp_record.probability > nwp_record.probability)
             nwp_record = tmp_nwp_record;
     }
     return &t->vocab_lookup[nwp_record.word_id];
+}
+
+static int k_nwp_f(const void *a, const void *b)
+{
+    const struct array_record *ra = (struct array_record *) a;
+    const struct array_record *rb = (struct array_record *) b;
+    if (ra->probability > rb->probability)
+        return -1;
+    if (ra->probability < rb->probability)
+        return 1;
+    return 0;
+}
+
+static void get_children_slice(const struct trie *t, const char **words,
+                               unsigned short n, uint64_t *l, uint64_t *r)
+{
+    int is_sentence_start = n == 0;
+    uint64_t index;
+    word_id_type ids[n];
+    int ids_start = 0;
+
+    if (!is_sentence_start) {
+        trie_get_word_ids(t, words, n, ids);
+        for (int i = 0; i < n; i++)
+            if (is_unknown_wid(t, ids[i]))
+                ids_start = i + 1;
+        n = n - ids_start;
+        is_sentence_start = n == 0;
+    }
+
+    if (!is_sentence_start) {
+        while (map_trie_path(t, &ids[ids_start], n, trie_get_nwp_f, &index) <
+               n) {
+            ids_start++;
+            n--;
+        }
+    } else {
+        index = trie_get_word_id_from_text(t, "<s>");
+        n = 1;
+    }
+
+    struct array_record ar = get_array_record(t, n, index);
+    struct array_record adjacent_ar = get_array_record(t, n, index + 1);
+    *l = ar.first_child_index;
+    *r = adjacent_ar.first_child_index;
+}
+
+void trie_get_k_nwp_aux(const struct trie *t, const char **words, int n,
+                        unsigned short k, struct array_record *parent_records,
+                        unsigned int pr_len)
+{
+    uint64_t left, right;
+    get_children_slice(t, words, n, &left, &right);
+    if (n == 0) n = 1;
+
+    struct array_record records[right - left];
+    unsigned int j = 0, jp = 0;
+    struct array_record r;
+    struct array_record pr = parent_records[0];
+    for (uint64_t i = left; i < right; i++) {
+        r = get_array_record(t, n + 1, i);
+        while (pr.word_id < r.word_id && jp < pr_len)
+            pr = parent_records[jp++];
+        if (pr.word_id == r.word_id)
+            continue;
+        records[j++] = get_array_record(t, n + 1, i);
+    }
+    for (uint64_t i = 0; i < j && i < k; i++)
+        parent_records[pr_len + i] = records[i];
+    if (j < k) {
+        trie_get_k_nwp_aux(t, &words[1], n - 1, k - j, parent_records, pr_len
+                                                                       + j);
+    }
+    qsort(&parent_records[pr_len], (j < k) ? j : k,
+          sizeof(struct array_record), k_nwp_f);
+}
+
+void trie_get_k_nwp(const struct trie *t, const char **words, int n,
+                    unsigned short k, struct word **predictions)
+{
+    uint64_t left, right;
+    get_children_slice(t, words, n, &left, &right);
+
+    unsigned long r_len = ((right - left) < k ? k : right - left);
+    struct array_record nwp_records[r_len];
+    int j = 0;
+    for (uint64_t i = left; i < right; i++) {
+        nwp_records[j++] = get_array_record(t, n + 1, i);
+    }
+    if (k > j)
+        trie_get_k_nwp_aux(t, &words[1], n - 1, k - j, nwp_records, j);
+
+    qsort(nwp_records, right - left, sizeof(struct array_record), k_nwp_f);
+
+    for (int i = 0; i < k; i++)
+        predictions[i] = &t->vocab_lookup[nwp_records[i].word_id];
 }
 
 float trie_ngram_probability(const struct trie *t, const char **words, int n)
