@@ -5,6 +5,9 @@ In development...
 
 ## Python
 
+### Requirements
+- Linux platform
+
 ### Installation
 The library is available on the PyPI and can be installed with the command `pip install ngram-lm`.
 
