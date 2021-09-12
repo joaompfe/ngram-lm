@@ -12,7 +12,7 @@ In development...
 The library is available on the PyPI and can be installed with the command `pip install ngram-lm`.
 
 ### Usage
-Given some ARPA file, a trie can be built like this:
+Given an ARPA file, a trie can be built like this:
 ```python
 from ngram_lm.trie import build
 lm_order = 3
