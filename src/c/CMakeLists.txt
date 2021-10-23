@@ -44,5 +44,9 @@ target_link_libraries(
         gtest_main
 )
 
+message(${PROJECT_SOURCE_DIR})
+
 include(GoogleTest)
-gtest_discover_tests(ngram_lm_test)
+gtest_discover_tests(
+    ngram_lm_test
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
