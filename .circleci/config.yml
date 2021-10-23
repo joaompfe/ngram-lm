@@ -5,7 +5,7 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build-c:
+  c:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -15,13 +15,18 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build C source
+          name: Build
           command: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_DEPENDS_USE_COMPILER=FALSE -B build/cmake/release .
-      - run: if test -d ./build/cmake/release; then exit 0; else exit 1; fi
+      - run:
+          name: Compile
+          command: pushd build/cmake/release/ && make && popd
+      - run:
+          name: Test
+          command: ctest --test-dir build/cmake/release/src/c/
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   stable:
     jobs:
-      - build-c
+      - c
