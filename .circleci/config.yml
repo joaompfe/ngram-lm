@@ -16,7 +16,7 @@ jobs:
       - checkout
       - run:
           name: Build C source
-          command: cd src/c && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_DEPENDS_USE_COMPILER=FALSE -B build/cmake/release .
+          command: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_DEPENDS_USE_COMPILER=FALSE -B build/cmake/release .
       - run: if test -d ./build/cmake/release; then exit 0; else exit 1; fi
 
 # Invoke jobs via workflows
