@@ -653,6 +653,8 @@ get_array_record_field_sizes(const struct trie *t, int n, unsigned int *dest)
               ceil_log2(t->n_ngrams[0]);
     if (n != 1 && n != t->order)
         dest[2] = ceil_log2(t->n_ngrams[n] + 1);
+    else
+        dest[2] = 0;
 }
 
 static void get_array_tmp_record_field_sizes(const struct trie *t, int n,
