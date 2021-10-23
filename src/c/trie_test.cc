@@ -194,5 +194,5 @@ TEST(Trie, NgramProbability)
     words[1] = "maior";
     words[2] = "aprofundamento";
     prob = trie_ngram_probability(t, words, 3);
-    EXPECT_EQ(prob, -0.29952f - 0.30103f);
+    EXPECT_EQ(prob, -0.29952f);
 }
