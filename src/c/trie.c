@@ -848,5 +848,5 @@ float trie_ngram_probability(const struct trie *t, const char **words, int n)
     if (tmp_n == n)
         return ngram->probability;
     else
-        return ngram->probability + ngram->backoff;
+        return ngram->probability + 0;
 }
