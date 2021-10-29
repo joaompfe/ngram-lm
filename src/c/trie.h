@@ -142,12 +142,4 @@ struct word *trie_get_nwp(const struct trie *t, const char **words, int n);
 void trie_get_k_nwp(const struct trie *t, const char **words, int n,
                     unsigned short k, struct word **predictions);
 
-/**
- * Give the smoothed probability of the \p n -gram given by \p words.
- * @param words
- * @param n
- * @return
- */
-float trie_ngram_probability(const struct trie *t, const char **words, int n);
-
 #endif //NGRAM_LM_TRIE_H
