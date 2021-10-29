@@ -198,14 +198,27 @@ TEST(Trie, trie_get_k_nwp)
     ASSERT_STREQ(word_preds[8]->text, "Na");
     ASSERT_STREQ(word_preds[9]->text, "Em");
 
-    words[0] = "é";
-    words[1] = "que";
+    words[0] = "havia";
+    words[1] = "é";
+    trie_get_k_nwp(t, words, 2, 1, word_preds);
+    ASSERT_STREQ(word_preds[0]->text, "que");
+
+    words[0] = "bla";
+    words[1] = "é";
     words[2] = "que";
-    EXPECT_EXIT(
-            trie_get_k_nwp(t, words, 3, k, word_preds);,
-            ::testing::KilledBySignal(11),
-            ".*"
-    );
+    words[3] = "é";
+    words[4] = "que";
+    trie_get_k_nwp(t, words, 5, k, word_preds);
+    ASSERT_STREQ(word_preds[0]->text, "os");
+    ASSERT_STREQ(word_preds[1]->text, "levaram");
+    ASSERT_STREQ(word_preds[2]->text, "já");
+    ASSERT_STREQ(word_preds[3]->text, "avançaram");
+    ASSERT_STREQ(word_preds[4]->text, "Público");
+    ASSERT_STREQ(word_preds[5]->text, "dentro");
+    ASSERT_STREQ(word_preds[6]->text, "lhes");
+    ASSERT_STREQ(word_preds[7]->text, "reforça");
+    ASSERT_STREQ(word_preds[8]->text, "Na");
+    ASSERT_STREQ(word_preds[9]->text, "Em");
 
     trie_delete(t);
 }

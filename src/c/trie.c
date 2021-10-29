@@ -751,35 +751,35 @@ static int k_nwp_f(const void *a, const void *b)
 }
 
 static void get_children_slice(const struct trie *t, const char **words,
-                               unsigned short n, uint64_t *l, uint64_t *r)
+                               unsigned short *n, uint64_t *l, uint64_t *r)
 {
-    int is_sentence_start = n == 0;
+    int is_sentence_start = *n == 0;
     uint64_t index;
-    word_id_type ids[n];
+    word_id_type ids[*n];
     int ids_start = 0;
 
     if (!is_sentence_start) {
-        trie_get_word_ids(t, words, n, ids);
-        for (int i = 0; i < n; i++)
+        trie_get_word_ids(t, words, *n, ids);
+        for (int i = 0; i < *n; i++)
             if (is_unknown_wid(t, ids[i]))
                 ids_start = i + 1;
-        n = n - ids_start;
-        is_sentence_start = n == 0;
+        *n = *n - ids_start;
+        is_sentence_start = *n == 0;
     }
 
     if (!is_sentence_start) {
-        while (map_trie_path(t, &ids[ids_start], n, trie_get_nwp_f, &index) <
-               n) {
+        while (map_trie_path(t, &ids[ids_start], *n, trie_get_nwp_f, &index) <
+               *n) {
             ids_start++;
-            n--;
+            *n = *n - 1;
         }
     } else {
         index = trie_get_word_id_from_text(t, "<s>");
-        n = 1;
+        *n = 1;
     }
 
-    struct array_record ar = get_array_record(t, n, index);
-    struct array_record adjacent_ar = get_array_record(t, n, index + 1);
+    struct array_record ar = get_array_record(t, *n, index);
+    struct array_record adjacent_ar = get_array_record(t, *n, index + 1);
     *l = ar.first_child_index;
     *r = adjacent_ar.first_child_index;
 }
@@ -789,7 +789,10 @@ void trie_get_k_nwp_aux(const struct trie *t, const char **words, int n,
                         unsigned int pr_len)
 {
     uint64_t left, right;
-    get_children_slice(t, words, n, &left, &right);
+    unsigned short tmp_n = (unsigned short) n;
+    get_children_slice(t, words, &tmp_n, &left, &right);
+    words = &words[n - tmp_n];
+    n = tmp_n;
     if (n == 0) n = 1;
 
     struct array_record records[right - left];
@@ -818,7 +821,10 @@ void trie_get_k_nwp(const struct trie *t, const char **words, int n,
                     unsigned short k, struct word **predictions)
 {
     uint64_t left, right;
-    get_children_slice(t, words, n, &left, &right);
+    unsigned short tmp_n = (unsigned short) n;
+    get_children_slice(t, words, &tmp_n, &left, &right);
+    words = &words[n - tmp_n];
+    n = tmp_n;
 
     unsigned long r_len = ((right - left) < k ? k : right - left);
     struct array_record nwp_records[r_len];
