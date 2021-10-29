@@ -55,11 +55,14 @@ cdef class Trie:
         free(<void *> cpreds)
         return preds
 
+    def nwp(self, words: [str], k: int = 1):
+        return self.next_word_predictions(words, k)
+
 
 def build(order: int, arpa_path: str, out_path: str):
     def job():
         cdef ctrie.trie *t = ctrie.trie_new_from_arpa_path(order, arpa_path.encode())
-        cdef FILE *f = fopen(out_path.encode(), "wb".encode());
+        cdef FILE *f = fopen(out_path.encode(), "wb".encode())
         if f is NULL:
             raise IOError("File could not be opened")
         ctrie.trie_fwrite(t, f)
